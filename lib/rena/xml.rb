@@ -261,7 +261,7 @@ class Reader
   def parse_parseTypeLiteralPropertyElt(e, base, lang=nil)
     io = StringIO.new
     c14n = ExecC14N.new(io)
-    c14n.run(e)    
+    c14n.run(e)
     TypedLiteral.new(io.string, XMLLiteral_DATATYPE_URI)
   end
 
@@ -593,8 +593,8 @@ class Writer
         #  e.remove
         #  parent.add_attribute(ename, object.to_s)
         #else
-          e << REXML::Text.new(object.to_s, true)
-          e.add_attribute("xml:lang", object.lang.to_s) if object.lang
+          e << REXML::Text.new(object.to_s.dup, true)
+          e.add_attribute("xml:lang", object.lang.to_s.dup) if object.lang
         #end
       elsif object.is_a?(Rena::TypedLiteral)
         if XMLLiteral_DATATYPE_URI == object.type
@@ -604,9 +604,9 @@ class Writer
           }
           e.add_attribute(fold_uri(RDF::Namespace + "parseType"), 'Literal')
         elsif not object.to_s.empty?        
-          e << REXML::Text.new(object.to_s, true)
+          e << REXML::Text.new(object.to_s.dup, true)
           e.add_attribute(fold_uri(RDF::Namespace + "datatype"),
-                          object.type.to_s)
+                          object.type.to_s.dup)
         else
           raise SaveError.new("can't write empty TypedLiteral")
         end
@@ -667,7 +667,7 @@ class Writer
       prefix = "ns" + @ns_counter.to_s
       @ns_counter = @ns_counter.succ
       unless @namespaces.has_key?(prefix)
-        uri = uri.to_s.freeze
+        uri = uri.to_s
         @namespaces[prefix] = uri
         @root.add_namespace(prefix, uri)
         return prefix + ":" + s
