@@ -184,16 +184,6 @@ class Model
   def each_statement(&block)
     raise RuntimeError.new("implement this method")
   end
-
-=begin
-  def add(statement)
-    raise RuntimeError.new("implement this method")
-  end
-
-  def <<(statement)
-    add(statement)
-  end
-=end
 end
 
 
