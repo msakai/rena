@@ -1,20 +1,20 @@
 
 # http://www.purl.org/rss/1.0/spec
 module Rena::RSS
-  Prefix    = "rss"
-  Namespace = "http://purl.org/rss/1.0/"
+  Prefix    = "rss".freeze
+  Namespace = "http://purl.org/rss/1.0/".freeze
 
   # class
-  Channel = URI.parse(Namespace + "channel")
-  Item    = URI.parse(Namespace + "item")
-  Image   = URI.parse(Namespace + "image")
+  Channel = URI.parse(Namespace + "channel").freeze
+  Item    = URI.parse(Namespace + "item").freeze
+  Image   = URI.parse(Namespace + "image").freeze
 
   # predicates
-  Title       = URI.parse(Namespace + "title")
-  Link        = URI.parse(Namespace + "link")
-  Description = URI.parse(Namespace + "description")
-  #Image       = URI.parse(Namespace + "image")
-  Items       = URI.parse(Namespace + "items")
-  TextInput   = URI.parse(Namespace + "textinput")
-  Name        = URI.parse(Namespace + "name")
+  Title       = URI.parse(Namespace + "title").freeze
+  Link        = URI.parse(Namespace + "link").freeze
+  Description = URI.parse(Namespace + "description").freeze
+  #Image       = URI.parse(Namespace + "image").freeze
+  Items       = URI.parse(Namespace + "items").freeze
+  TextInput   = URI.parse(Namespace + "textinput").freeze
+  Name        = URI.parse(Namespace + "name").freeze
 end
