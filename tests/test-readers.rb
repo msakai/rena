@@ -12,11 +12,13 @@ require 'pp'
 class TestReaders < Test::Unit::TestCase
   include RenaTestUtils
 
-  def check_rdf(nt_fpath, rdf_fpath)
+  def check_rdf(nt_fpath, rdf_fpath, check_warn=false)
     uri1 = URI.parse("http://www.w3.org/2000/10/rdf-tests/rdfcore/" +
                        nt_fpath.sub(/^.*approved_20031114\//, ''))
     uri2 = URI.parse("http://www.w3.org/2000/10/rdf-tests/rdfcore/" +
                        rdf_fpath.sub(/^.*approved_20031114\//, ''))
+
+    is_warned = false
 
     model1 = Rena::MemModel.new
     model2 = Rena::MemModel.new
@@ -26,7 +28,10 @@ class TestReaders < Test::Unit::TestCase
                 :base => uri1)
     model2.load(rdf_fpath,
                 :content_type => 'application/rdf+xml',
-                :base => uri2)
+                :base => uri2,
+                :warn => lambda{ is_warned = true })
+    
+    assert_equal(true, is_warned) if check_warn
 
     if model1.statements.size != model2.statements.size
       puts "--------------------------------"
@@ -61,7 +66,7 @@ class TestReaders < Test::Unit::TestCase
                  :base => base)
     }
   end
-  
+
 
   base = File.join(File.dirname(__FILE__), "approved_20031114")
   Dir.entries(base).each{|e|
@@ -86,6 +91,16 @@ class TestReaders < Test::Unit::TestCase
         mname = "test_" + e.gsub(/-/, "_") + "__" + m[2].gsub(/-/, "_")
         define_method(mname.intern){||
           check_error(rdf_fpath)
+        }
+      end
+    }
+
+    Find.find(fname){|rdf_fpath|
+      if m = %r!(.*/(warn[^/]*))\.rdf$!.match(rdf_fpath) and
+          File.exist?(nt_fpath = m[1] + ".nt")
+        mname = "test_" + e.gsub(/-/, "_") + "__" + m[2].gsub(/-/, "_")
+        define_method(mname.intern){||
+          check_rdf(nt_fpath, rdf_fpath, true)
         }
       end
     }
