@@ -11,6 +11,9 @@ require 'rena/rdf'
 module Rena
 module XML
 
+XMLLiteral_DATATYPE_URI =
+  URI.parse("http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral").freeze
+
 class Reader
   def initialize
     @model = nil
@@ -66,9 +69,6 @@ class Reader
     end
   end
 
-  XMLLiteral_DATATYPE_URI =
-    URI.parse("http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral")
-
   def parse_doc(doc, base = URI.parse(""))
     root = doc.root
     unless root.is_a? REXML::Element
@@ -115,7 +115,8 @@ class Reader
     end
 
     if id
-      uri = base + ("#" + id.value)
+      uri = base.dup
+      uri.fragment = id.value
       if @used_id.member?(uri)
         raise RuntimeError.new("two elements cannot use the same ID")
       else
@@ -202,8 +203,7 @@ class Reader
         end
       elsif e.elements.size == 1
         object = parse_resourcePropertyElt(e, new_base, new_lang)
-      elsif e.children.any?{|c| c.is_a? REXML::Text } or
-          get_attribute(e, "datatype", RDF::Namespace) # ???
+      elsif e.children.any?{|c| c.is_a? REXML::Text }
         object = parse_literalPropertyElt(e, new_base, new_lang)
       else
         object = parse_emptyPropertyElt(e, new_base, new_lang)
@@ -447,19 +447,11 @@ class Reader
       attr_table = []
       new_ns_rendered = ns_rendered.dup
 
-      if node.prefix != '' and
-          node.namespace(node.prefix) != ns_rendered[node.prefix]
-        ns = node.namespace(node.prefix)
-        ns_table.push [node.prefix, ns]
-        new_ns_rendered[node.prefix] = ns
-      end
+      node.attributes.each_attribute{|attr|
+        next if "xmlns"==attr.prefix or "xmlns"==attr.expanded_name
 
-      node.attributes.each{|attr|
-        unless "xmlns"==attr.prefix or "xmlns"==attr.expanded_name
-          next
-        end
-
-        if attr.prefix != '' and ns_rendered[attr.prefix] != attr.namespace
+        if attr.prefix != '' and
+            ns_rendered[attr.prefix] != attr.namespace(attr.prefix)
           ns = node.namespace(attr.prefix)
           ns_table.push [attr.prefix, ns]
           new_ns_rendered[attr.prefix] = ns
@@ -470,7 +462,7 @@ class Reader
       @output.print('<', node.fully_expanded_name)
       
       if node.prefix=='' and
-          node.namespace!='' and ns_rendered['']!= node.namespace
+          node.namespace!='' and ns_rendered[''] != node.namespace
         @output.print(' ', 'xmlns', '=', '"',
                       escape_attr_value(node.namespace),
                       '"')
@@ -617,15 +609,21 @@ class Writer
       parent << e
       parent << REXML::Text.new("\n")
 
-      if object.is_a?(Rena::Literal)
-        if object.is_a?(Rena::PlainLiteral) and object.lang
-          e.add_attribute("xml:lang", object.lang.to_s)
-        end
-        if object.is_a?(Rena::TypedLiteral)
+      if object.is_a?(Rena::PlainLiteral)
+        e << REXML::Text.new(object.to_s, true)
+        e.add_attribute("xml:lang", object.lang.to_s) if object.lang
+      elsif object.is_a?(Rena::TypedLiteral)
+        unless XMLLiteral_DATATYPE_URI == object.type
+          e << REXML::Text.new(object.to_s, true)
           e.add_attribute(fold_uri(RDF::Namespace + "datatype"),
                           object.type.to_s)
+        else
+          tmp = REXML::Document.new('<dummy>' + object.to_s + '</dummy>')
+          tmp.root.children.to_a.each{|child|
+            e << child.remove
+          }
+          e.add_attribute(fold_uri(RDF::Namespace + "parseType"), 'Literal')
         end
-        e << REXML::Text.new(object.to_s, true)
       else
         if @written.member?(object)
           if object.uri
