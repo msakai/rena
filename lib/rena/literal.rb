@@ -5,8 +5,12 @@
 
 module Rena
 
-
+#
+# Parent class of Rena::PlainLiteral and Rena::TypedLiteral.
+#
 class Literal
+
+  private
 
   begin
     # http://www.yoshidam.net/Ruby_ja.html
@@ -29,6 +33,9 @@ class Literal
 
   public
 
+  #
+  # returns string value.
+  # 
   def string
     @str
   end
@@ -44,18 +51,26 @@ class Literal
 end # class Literal
 
 
+# http://www.w3.org/TR/rdf-concepts/#dfn-plain-literal
 class PlainLiteral < Literal
   def initialize(str, lang = nil)
     super(str)
     @lang = lang
-    @lang.freeze
+    if @lang
+      @lang.downcase
+      @lang.freeze
+    end
   end
+
+  # returns a language tag as defined by [RFC-3066],
+  # normalized to lowercase, or nil.
   attr_reader :lang
 
   def ==(other)
-    PlainLiteral === other and
-      to_s == other.to_s and
-      @lang == other.lang
+    equal?(other) or
+      (PlainLiteral === other and
+         to_s == other.to_s and
+         @lang == other.lang)
   end
 
   def hash
@@ -79,19 +94,25 @@ class PlainLiteral < Literal
 end # class PlainLiteral
 
 
-
+# http://www.w3.org/TR/rdf-concepts/#dfn-typed-literal
 class TypedLiteral < Literal
   def initialize(str, type)
     super(str)
     @type = type
     @type.freeze
   end
+
+  # returns <i>datatype URI</i>.
   attr_reader :type
 
+  # returns <i>datatype URI</i>.
+  alias datatype type
+
   def ==(other)
-    TypedLiteral === other and
-      to_s == other.to_s and
-      @type == other.type
+    equal?(other) or
+      (TypedLiteral === other and
+         to_s == other.to_s and
+         @type == other.type)
   end
 
   def hash
