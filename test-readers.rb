@@ -49,9 +49,7 @@ class TestReaders < Test::Unit::TestCase
     Hyperset.solve(eqns)[root]
   end
 
-  def check_dir(dir)
-    Find.find(dir){|rdf_fpath|
-      if %r!(.*/test[^/]*)\.rdf$! =~ rdf_fpath and File.exist?(nt_fpath = $1 + ".nt")
+  def check_rdf(rdf_fpath, nt_fpath)
 	reader1 = Rena::XMLReader.new
 	reader2 = Rena::NTReader.new
 
@@ -76,8 +74,6 @@ class TestReaders < Test::Unit::TestCase
 
 	assert_equal(s1, s2,
 		     "#{rdf_fpath} and #{nt_fpath} are not equal as hyperset")
-      end
-    }
   end
 
   base = "approved_20031114"
@@ -85,8 +81,15 @@ class TestReaders < Test::Unit::TestCase
     next if ["..", "."].member?(e)
     fname = File.join(base, e)
     next unless File.directory?(fname)
-    define_method(("test_" + e.gsub(/-/, "_")).intern){||
-      check_dir(fname)
+
+    Find.find(fname){|rdf_fpath|
+      if %r!(.*/(test[^/]*))\.rdf$! =~ rdf_fpath and
+	  File.exist?(nt_fpath = $1 + ".nt")
+	tmp = $2
+	define_method(("test_" + e.gsub(/-/, "_") + "__" + tmp).intern){||
+	  check_rdf(rdf_fpath, nt_fpath)
+	}
+      end
     }
   }
 
