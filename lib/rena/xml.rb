@@ -117,11 +117,7 @@ class Reader
     if id
       uri = base.dup
       uri.fragment = id.value
-      if @used_id.member?(uri)
-        raise LoadError.new("two elements cannot use the same ID")
-      else
-        @used_id.push uri
-      end
+      check_id(uri)
       subject = @model.create_resource(uri)
     elsif nodeID
       # FIXME: rdfms-syntax-incomplete/error001.rdf
@@ -188,9 +184,9 @@ class Reader
       parseType = get_attribute(e, "parseType", RDF::Namespace)
 
       if parseType
-        # XXX
+        # FIXME: rdf:ID以外のrdf:* は全部エラー
         if get_attribute(e, "resource", RDF::Namespace)
-          raise LoadError.new('specifying an rdf:parseType of "Literal" and an rdf:resource attribute at the same time is an error.')
+          raise LoadError.new("specifying an rdf:parseType of \"#{parseType.value}\" and an rdf:resource attribute at the same time is an error.")
         end
 
         case parseType.value
@@ -207,7 +203,7 @@ class Reader
         else
           object = parse_parseTypeOtherPropertyElt(e, new_base, new_lang)
         end
-      elsif e.elements.size == 1
+      elsif e.elements.size == 1 # FIXME
         object = parse_resourcePropertyElt(e, new_base, new_lang)
       elsif e.children.any?{|c| c.is_a? REXML::Text }
         object = parse_literalPropertyElt(e, new_base, new_lang)
@@ -219,12 +215,7 @@ class Reader
 
       if id = get_attribute(e, "ID", RDF::Namespace)
         uri = new_base + ("#" + id.value)
-
-        if @used_id.member?(uri)
-          raise LoadError.new("two elements cannot use the same ID")
-        else
-          @used_id.push uri
-        end
+        check_id(uri)
 
         @model.create_resource(uri).
           add_property(RDF::Type, @model.create_resource(RDF::Statement)).
@@ -373,6 +364,14 @@ class Reader
 
   def lookup_nodeID(nodeID)
     @blank_nodes[nodeID] ||= @model.create_resource
+  end
+
+  def check_id(uri)
+    if @used_id.member?(uri)
+      raise LoadError.new("two elements cannot use the same ID")
+    else
+      @used_id.push uri
+    end
   end
 
   # to avoid bugs of REXML::Element.
