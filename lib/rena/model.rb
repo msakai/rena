@@ -57,6 +57,11 @@ class Statement
 end # class Statement
 
 
+class Error < RuntimeError; end
+class LoadError < Error; end
+class SaveError < Error; end
+
+
 class Model
 
   def load(input, params = {})

@@ -14,9 +14,6 @@ class TestReaders < Test::Unit::TestCase
   include RenaTestUtils
 
   def check_rdf(nt_fpath, rdf_fpath)
-    reader1 = Rena::NTReader.new
-    reader2 = Rena::XMLReader.new
-
     uri1 = URI.parse("http://www.w3.org/2000/10/rdf-tests/rdfcore/" +
                        nt_fpath.sub(/^.*approved_20031114\//, ''))
     uri2 = URI.parse("http://www.w3.org/2000/10/rdf-tests/rdfcore/" +
@@ -59,7 +56,7 @@ class TestReaders < Test::Unit::TestCase
     base = URI.parse("http://www.w3.org/2000/10/rdf-tests/rdfcore/" +
                        rdf_fpath.sub(/^.*approved_20031114\//, ''))
 
-    assert_raise(StandardError, RuntimeError){ # XXX
+    assert_raise(Rena::LoadError){
       model.load(rdf_fpath,
                  :content_type => 'application/rdf+xml',
                  :base => base)

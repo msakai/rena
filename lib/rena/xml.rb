@@ -111,14 +111,14 @@ class Reader
     about  = get_attribute(e, "about",  RDF::Namespace)
 
     if [id, nodeID, about].compact.size > 1
-      raise RuntimeError.new
+      raise LoadError.new
     end
 
     if id
       uri = base.dup
       uri.fragment = id.value
       if @used_id.member?(uri)
-        raise RuntimeError.new("two elements cannot use the same ID")
+        raise LoadError.new("two elements cannot use the same ID")
       else
         @used_id.push uri
       end
@@ -135,7 +135,7 @@ class Reader
     # FIXME
     if e.namespace == RDF::Namespace
       if ["RDF","ID","about","parseType","resource","nodeID","datatype","li","aboutEach","aboutEachPrefix","bagID"].member?(e.local_name)
-        raise RuntimeError.new
+        raise LoadError.new
       end
     end
 
@@ -172,7 +172,7 @@ class Reader
       # FIXME
       if e.namespace == RDF::Namespace
         if ["RDF","ID","about","parseType","resource","nodeID","datatype","Description","aboutEach","aboutEachPrefix","bagID"].member?(e.local_name)
-          raise RuntimeError.new
+          raise LoadError.new
         end
       end
 
@@ -188,7 +188,7 @@ class Reader
       if parseType
         # XXX
         if get_attribute(e, "resource", RDF::Namespace)
-          raise RuntimeError.new('specifying an rdf:parseType of "Literal" and an rdf:resource attribute at the same time is an error.')
+          raise LoadError.new('specifying an rdf:parseType of "Literal" and an rdf:resource attribute at the same time is an error.')
         end
 
         case parseType.value
@@ -197,6 +197,10 @@ class Reader
         when "Collection"
           object = parse_parseTypeCollectionPropertyElt(e, new_base, new_lang)
         when "Literal"
+          e.attributes.each_attribute{|attr|
+            # rdfms-empty-property-elements/error003.rdf
+            raise LoadError.new if parse_propertyAttr(e, attr)
+          }
           object = parse_parseTypeLiteralPropertyElt(e, new_base, new_lang)
         else
           object = parse_parseTypeOtherPropertyElt(e, new_base, new_lang)
@@ -215,7 +219,7 @@ class Reader
         uri = new_base + ("#" + id.value)
 
         if @used_id.member?(uri)
-          raise RuntimeError.new("two elements cannot use the same ID")
+          raise LoadError.new("two elements cannot use the same ID")
         else
           @used_id.push uri
         end
@@ -304,10 +308,17 @@ class Reader
     if flag
       PlainLiteral.new('', lang)
     else
-      if resource = get_attribute(e, "resource", RDF::Namespace)
+      resource = get_attribute(e, "resource", RDF::Namespace)
+      nodeID   = get_attribute(e, "nodeID", RDF::Namespace)
+
+      # rdfms-syntax-incomplete/error006.rdf
+      if resource and nodeID
+        raise LoadError.new("Cannot have rdf:nodeID and rdf:resource")
+      end
+
+      if resource
         @model.create_resource(base + resource.value)
-      elsif nodeID = get_attribute(e, "nodeID", RDF::Namespace)
-        # FIXME: rdfms-syntax-incomplete/error001.rdf
+      elsif nodeID
         lookup_nodeID(nodeID.value)     
       else
         @model.create_resource
@@ -336,11 +347,11 @@ class Reader
 
       if ns==RDF::Namespace
         if ["aboutEach", "aboutEachPrefix", "bagID"].member?(attr.local_name)
-          raise RuntimeError.new("rdf:aboutEach, rdf:aboutEachPrefix and rdf:bagID are obsoleted")
+          raise LoadError.new("rdf:aboutEach, rdf:aboutEachPrefix and rdf:bagID are obsoleted")
         end
 
         if ["RDF", "li", "Description"].member?(attr.local_name)
-          raise RuntimeError.new
+          raise LoadError.new
         end
 
         if ["ID", "about", "parseType", "resource", "nodeID", "datatype"].member?(attr.local_name)
@@ -446,6 +457,13 @@ class Reader
       ns_table   = []
       attr_table = []
       new_ns_rendered = ns_rendered.dup
+
+      if node.prefix != '' and
+          ns_rendered[node.prefix] != node.namespace
+        ns = node.namespace
+        ns_table.push [node.prefix, ns]
+        new_ns_rendered[node.prefix] = ns
+      end
 
       node.attributes.each_attribute{|attr|
         next if "xmlns"==attr.prefix or "xmlns"==attr.expanded_name
@@ -674,7 +692,7 @@ class Writer
       s = $2
     else
       # FIXME
-      raise RuntimeError.new("FIXME: no namespace match against #{uri}")
+      raise SaveError.new("FIXME: no namespace match against #{uri}")
     end
 
     loop {
