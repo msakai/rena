@@ -6,8 +6,7 @@ require 'find'
 require 'pp'
 $KCODE='utf-8'
 
-class TestReaders < Test::Unit::TestCase
-
+module RenaTestUtils
   def model_to_hyperset(model)
     blank2var_hash = {}
     blank2var = lambda{|x|
@@ -50,6 +49,12 @@ class TestReaders < Test::Unit::TestCase
   
     Hyperset.solve(eqns)[root]
   end
+end
+
+
+
+class TestReaders < Test::Unit::TestCase
+  include RenaTestUtils
 
   def check_rdf(nt_fpath, rdf_fpath)
     reader1 = Rena::NTReader.new
@@ -59,28 +64,30 @@ class TestReaders < Test::Unit::TestCase
                        nt_fpath.sub(/^.*approved_20031114\//, ''))
     uri2 = URI.parse("http://www.w3.org/2000/10/rdf-tests/rdfcore/" +
                        rdf_fpath.sub(/^.*approved_20031114\//, ''))
+
+    model1 = Rena::MemModel.new
+    model2 = Rena::MemModel.new
           
-    reader1.model = Rena::MemModel.new
-    reader2.model = Rena::MemModel.new
+    reader1.model = model1
+    reader2.model = model2
 
     reader1.read(File.open(nt_fpath), uri1)
     reader2.read(File.open(rdf_fpath), uri2)
 
-
-    if reader1.model.statements.size != reader2.model.statements.size
+    if model1.statements.size != model2.statements.size
       puts "--------------------------------"
-      reader1.model.statements.map{|s| p s.predicate }
+      model1.statements.map{|s| p s.predicate }
       puts "--------------------------------"
-      reader2.model.statements.map{|s| p s.predicate }
+      model2.statements.map{|s| p s.predicate }
       puts "--------------------------------"
     end
 
-    assert_equal(reader1.model.statements.size,
-                 reader2.model.statements.size,
+    assert_equal(model1.statements.size,
+                 model2.statements.size,
                  "#{nt_fpath} and #{rdf_fpath} have different number of statements")
 
-    s1 = model_to_hyperset(reader1.model)
-    s2 = model_to_hyperset(reader2.model)
+    s1 = model_to_hyperset(model1)
+    s2 = model_to_hyperset(model2)
 
     assert_equal(s1, s2,
                  "#{nt_fpath} and #{rdf_fpath} are not equal as hyperset")
@@ -109,3 +116,65 @@ class TestReaders < Test::Unit::TestCase
 
 end
 
+
+
+
+class TestXMLWriter < Test::Unit::TestCase
+  include RenaTestUtils
+
+  def check_rdf(rdf_fpath)
+    uri = URI.parse("http://www.w3.org/2000/10/rdf-tests/rdfcore/" +
+                      rdf_fpath.sub(/^.*approved_20031114\//, ''))    
+
+    model1 = Rena::MemModel.new
+    model2 = Rena::MemModel.new
+
+    reader1 = Rena::XMLReader.new
+    reader1.model = model1
+    reader1.read(File.open(rdf_fpath), uri)
+
+    writer = Rena::XMLWriter.new
+    doc = writer.model2rdfxml(model1)
+
+    reader2 = Rena::XMLReader.new
+    reader2.model = model2
+    reader2.read_from_xml_document(doc, uri)
+
+    if model1.statements.size != model2.statements.size
+      puts "--------------------------------"
+      model1.statements.map{|s| p s.predicate }
+      puts "--------------------------------"
+      model2.statements.map{|s| p s.predicate }
+      puts "--------------------------------"
+    end
+
+    assert_equal(model1.statements.size,
+                 model2.statements.size,
+                 "#{rdf_fpath} have different number of statements")
+
+    s1 = model_to_hyperset(model1)
+    s2 = model_to_hyperset(model2)
+
+    assert_equal(s1, s2,
+                 "#{rdf_fpath} are not equal as hyperset")
+  end
+
+  base = "approved_20031114"
+  Dir.entries(base).each{|e|
+  #["rdf-containers-syntax-vs-schema"].each{|e|
+  #["rdfms-xml-literal-namespaces"].each{|e|
+    next if ["..", "."].member?(e)
+    fname = File.join(base, e)
+    next unless File.directory?(fname)
+
+    Find.find(fname){|rdf_fpath|
+      if m = %r!(.*/(test[^/]*))\.rdf$!.match(rdf_fpath)
+        mname = "test_" + e.gsub(/-/, "_") + "__" + m[2]
+        define_method(mname.intern){||
+          check_rdf(rdf_fpath)
+        }
+      end
+    }
+  }
+
+end
