@@ -34,6 +34,12 @@ class PlainLiteral < Literal
       to_s.eql?(other.to_s) and
       @lang.eql?(other.lang)
   end
+
+  def inspect
+    s = to_s.inspect
+    s << "@" + @lang if @lang 
+    s
+  end
 end
 
 
@@ -57,6 +63,12 @@ class TypedLiteral < Literal
     TypedLiteral === other and
       to_s.eql?(other.to_s) and
       @type.eql?(other.type)
+  end
+
+  def inspect
+    s = to_s.inspect
+    s << "^^<" + @type.to_s + ">" if @type
+    s
   end
 end
 
