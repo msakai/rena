@@ -7,6 +7,52 @@
 module Rena
 module NTriples
 
+def escape(str)
+  s = str.dup
+  s.gsub!(/\\/, "\\\\")
+  s.gsub!(/"/, "\\\"")
+  s.gsub!(/\n/, "\\n")
+  s.gsub!(/\r/, "\\r")
+  s.gsub!(/\t/, "\\t")
+
+  unicodes = s.unpack("U*")
+  s = ''
+  unicodes.each{|c|
+    if 0x20 <= c and c <= 0x7E
+      s.concat(format("%c",c))
+    else
+      s.concat(format("\\u%04X",c))
+    end
+  }
+
+  s
+end
+module_function :escape
+
+def unescape(str)
+  str.gsub(/\\([^u]|u([0-9a-fA-F]{4}))/){
+    case $1
+    when "\\"
+    when '"'
+      $1
+    when "n"
+      "\n"
+    when "r"
+      "\r"
+    when "t"
+      "\t"
+    else
+      if $2
+        [$2.hex].pack("U")
+      else
+        raise RuntimeError.new("\\#{$1} is invalid escape")
+      end
+    end
+  }    
+end
+module_function :unescape
+
+
 class Reader
   def initialize
     @model = nil
@@ -20,40 +66,40 @@ class Reader
       next if /\A\s*\Z/ =~ line
 
       if line.sub!(/\A\s*<([^>]*)>/, '')
-	subject = @model.create_resource(URI.parse(unescape($1)))
+        subject = @model.create_resource(URI.parse(NTriples.unescape($1)))
       elsif line.sub!(/\A\s*_:([A-Za-z][A-Za-z0-9]*)/, '')
-	subject = lookup_nodeID($1)
+        subject = lookup_nodeID($1)
       else
-	raise RuntimeError.new(line.inspect)
+        raise RuntimeError.new(line.inspect)
       end
 
       if line.sub!(/\A\s*<([^>]*)>/, '')
-	predicate = URI.parse(unescape($1)) # ???
+        predicate = URI.parse(NTriples.unescape($1)) # ???
       else
-	raise RuntimeError.new(line.inspect)
+        raise RuntimeError.new(line.inspect)
       end
 
       if line.sub!(/\A\s*<([^>]*)>/, '')
-	object = @model.create_resource(URI.parse($1))
+        object = @model.create_resource(URI.parse($1))
       elsif line.sub!(/\A\s*_:([A-Za-z][A-Za-z0-9]*)/, '')
-	object = lookup_nodeID($1)
+        object = lookup_nodeID($1)
       elsif line.sub!(/\A\s*"((?:\\"|[^"])*)"(?:@([a-zA-Z_\-]*))?(?:\^\^<([^>]*)>)?/, '')
-	str  = $1
-	lang = $2
-	type = $3
-        str = unescape(str)
+        str  = $1
+        lang = $2
+        type = $3
+        str = NTriples.unescape(str)
 
-	if type
-	  object = TypedLiteral.new(str, URI.parse(type))
-	else
-	  object = PlainLiteral.new(str, lang)
-	end
+        if type
+          object = TypedLiteral.new(str, URI.parse(type))
+        else
+          object = PlainLiteral.new(str, lang)
+        end
       else
-	raise RuntimeError.new(line.inspect)
+        raise RuntimeError.new(line.inspect)
       end
 
       unless /\A\s*\.\s*\Z/ =~ line
-	raise RuntimeError.new(line.inspect)
+        raise RuntimeError.new(line.inspect)
       end
 
       subject.add_property(predicate, object)
@@ -63,28 +109,6 @@ class Reader
   private
   def lookup_nodeID(nodeID)
     @blank_nodes[nodeID] ||= @model.create_resource
-  end
-
-  def unescape(str)
-    str.gsub(/\\([^u]|u([0-9a-fA-F]{4}))/){
-      case $1
-      when "\\" #"
-      when '"'
-        $1
-      when "n"
-        "\n"
-      when "r"
-        "\r"
-      when "t"
-        "\t"
-      else
-        if $2
-          [$2.hex].pack("U")
-        else
-          raise RuntimeError.new("\\#{$1} is invalid escape")
-        end
-      end
-    }    
   end
 end # class Reader
 
@@ -108,7 +132,7 @@ class Writer
     blank_nodes_to_id = Hash.new
     resource_to_nt = lambda{|resource|
       if resource.uri
-        '<' + resource.uri.to_s + '>'
+        '<' + NTriples.escape(resource.uri.to_s) + '>'
       else
         "_:" + (blank_nodes_to_id[resource] ||= "a" + (blank_node_counter += 1).to_s)
       end
@@ -119,7 +143,7 @@ class Writer
       subject.each_property{|prop, object|
         io.print subject_str
         io.print " "
-        io.print("<", prop.to_s, ">")
+        io.print("<", NTriples.escape(prop.to_s), ">")
         io.print " "
         if object.is_a? Literal
           io.print object.nt
