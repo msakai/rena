@@ -14,6 +14,8 @@ module XML
 XMLLiteral_DATATYPE_URI =
   URI.parse("http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral").freeze
 
+XMLNamespace = "http://www.w3.org/XML/1998/namespace"
+
 class Reader
   def initialize
     @model = nil
@@ -130,7 +132,7 @@ class Reader
     end
 
     unless e.namespace == RDF::Namespace and e.name == "Description"
-      uri = URI.parse(e.namespace(e.prefix) + e.name)
+      uri = URI.parse(e.namespace + e.name)
       subject.add_property(RDF::Type, @model.create_resource(uri))
     end
 
@@ -283,8 +285,9 @@ class Reader
         break
       end
 
-      if (ns = e.namespace(attr.prefix)) and
-          ns == RDF::Namespace and attr.local_name == 'ID'
+      if attr.namespace == RDF::Namespace and attr.local_name == 'ID'
+        next
+      elsif /^xml/ =~ attr.prefix or attr.namespace == XMLNamespace
         next
       else
         flag = false
@@ -329,8 +332,9 @@ class Reader
     elsif (attr.name==attr.expanded_name) and /^xml/i =~ attr.local_name # XXX
       nil
     else
-      ns = attr.namespace(attr.prefix)
+      ns = attr.namespace
       return nil unless ns
+      return nil if ns == XMLNamespace
 
       if ns==RDF::Namespace
         if ["aboutEach", "aboutEachPrefix", "bagID"].member?(attr.local_name)
@@ -421,9 +425,8 @@ class Reader
       node.attributes.each_attribute{|attr|
         next if "xmlns"==attr.prefix or "xmlns"==attr.expanded_name
 
-        if attr.prefix != '' and
-            ns_rendered[attr.prefix] != attr.namespace(attr.prefix)
-          ns = node.namespace(attr.prefix)
+        if attr.prefix != '' and ns_rendered[attr.prefix] != attr.namespace
+          ns = attr.namespace
           ns_table.push [attr.prefix, ns]
           new_ns_rendered[attr.prefix] = ns
         end
@@ -532,7 +535,7 @@ class Writer
   def write_resource(parent, resource)
     type  = nil
     ename = nil
-    resource[RDF::Type].each{|t|
+    resource.get_property_values(RDF::Type).each{|t|
       begin
         ename = fold_uri(t.uri)
         type  = t
