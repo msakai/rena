@@ -16,6 +16,21 @@ XMLLiteral_DATATYPE_URI =
 
 XMLNamespace = "http://www.w3.org/XML/1998/namespace"
 
+# FIXME
+def is_NCName(str)
+  if /^\d/ =~ str or /[!"#\$%&'\(\)\*\+,\/:;<=>\?@\[\\\]\^{\|}\~]/u =~ str
+    return false
+  end
+
+  if str.empty?
+    return false
+  end
+
+  true
+end
+module_function :is_NCName
+
+
 class Reader
   def initialize
     @model = nil
@@ -368,10 +383,11 @@ class Reader
   end
 
   def parse_idAttr(attr, base)
-    unless is_NCName(attr.value)
+    unless XML.is_NCName(attr.value)
       raise LoadError.new("The value of rdf:ID (#{attr.value.inspect}) must match the XML Name production, (as modified by XML Namespaces). ")
     end
 
+    # uri = base + ("#" + attr.value)
     uri = base.dup
     uri.fragment = attr.value
     uri.freeze
@@ -386,7 +402,7 @@ class Reader
   end
 
   def parse_nodeIdAttr(attr)
-    unless is_NCName(attr.value)
+    unless XML.is_NCName(attr.value)
       raise LoadError.new("The value of rdf:nodeID (#{attr.value.inspect}) must match the XML Name production, (as modified by XML Namespaces). ")
     end
 
@@ -394,15 +410,6 @@ class Reader
   end
 
   private
-
-  # FIXME
-  def is_NCName(str)
-    if /^(?:\d|_)/ =~ str or /[:\/]/ =~ str
-      false
-    else
-      true
-    end
-  end
 
   # to avoid bugs of REXML::Element.
   def get_attribute(e, name, namespace)
@@ -552,18 +559,36 @@ class Writer
 
   def write_top_resources(rdf)
     first = true
-
     parent = rdf
-    @model.each_resource{|resource|
+    f = lambda{|resource|
       if first
         first = false
         parent << REXML::Text.new("\n")
       end
-
-      if have_property?(resource) and not @written.member?(resource)
-        write_resource(parent, resource)
-      end
+      write_resource(parent, resource)
     }
+
+    @model.each_resource{|resource|
+      next if @written.member?(resource)
+      next unless have_property?(resource)
+
+      flag = false
+      @model.each_statement{|stmt|
+        if stmt.object == resource
+          flag = true 
+          break
+        end
+      }
+      next if flag
+
+      f[resource]
+    }
+
+    @model.each_resource{|resource|
+      next if @written.member?(resource)
+      next unless have_property?(resource)
+      f[resource]
+    }    
   end
 
   def write_resource(parent, resource)
@@ -601,6 +626,16 @@ class Writer
 
   def write_predicates(parent, resource, type = nil)
     first = true
+    create_element = lambda{|ename|
+      if first
+        first = false
+        parent << REXML::Text.new("\n")
+      end        
+      e = REXML::Element.new(ename)
+      parent << e
+      parent << REXML::Text.new("\n")
+      e
+    }
 
     resource.each_property{|prop, object|
       next if prop == RDF::Type and object == type
@@ -608,24 +643,17 @@ class Writer
       ename = fold_uri(prop)
       #ename = "rdf:li" if /rdf:_\d+/u =~ ename
 
-      if first
-        first = false
-        parent << REXML::Text.new("\n")
-      end
-        
-      e = REXML::Element.new(ename)
-      parent << e
-      parent << REXML::Text.new("\n")
-
       if object.is_a?(Rena::PlainLiteral)
-        #if !object.lang and parent.attribute(ename).nil?
-        #  e.remove
-        #  parent.add_attribute(ename, object.to_s)
-        #else
+        if !object.lang and parent.attribute(ename).nil?
+          #e.remove
+          parent.add_attribute(ename, object.to_s)
+        else
+          e = create_element[ename]
           e << REXML::Text.new(object.to_s.dup, true)
           e.add_attribute("xml:lang", object.lang.to_s.dup) if object.lang
-        #end
+        end
       elsif object.is_a?(Rena::TypedLiteral)
+        e = create_element[ename]
         if XMLLiteral_DATATYPE_URI == object.type
           tmp = REXML::Document.new('<dummy>' + object.to_s + '</dummy>')
           tmp.root.children.to_a.each{|child|
@@ -640,6 +668,7 @@ class Writer
           raise SaveError.new("can't write empty TypedLiteral")
         end
       else
+        e = create_element[ename]
         if @written.member?(object)
           if object.uri
             e.add_attribute(fold_uri(RDF::Namespace + "resource"),
@@ -668,25 +697,32 @@ class Writer
 
   def fold_uri(uri)
     uri_s = uri.to_s
+    result = nil
+
     @namespaces.each_pair{|prefix, namespace|
       if /\A#{Regexp.quote(namespace)}(.*)\Z/u =~ uri_s
+        tmp = $1
+        next unless XML.is_NCName(tmp)
+
         if prefix.empty?
-          return $1
+          return tmp
         else
-          return prefix + ":" + $1
+          return prefix + ":" + tmp
         end
       end
     }
 
     uri = uri.dup
     if s = uri.fragment
+      raise SaveError.new("#{s.inspect} doesn't match the XML Name production (as modified by XML Namespaces). ") unless XML.is_NCName(s)
       uri.fragment = ''
     elsif s = uri.query
-      uri = uri.query = ''
+      raise SaveError.new("#{s.inspect} doesn't match the XML Name production (as modified by XML Namespaces). ") unless XML.is_NCName(s)
+      uri.query = ''
     elsif path = uri.path
       %r!\A(.*/)([^/]+)\Z! =~ path
-      uri.path = $1
-      s = $2
+      uri.path, s = $1, $2
+      raise SaveError.new("#{s.inspect} doesn't match the XML Name production (as modified by XML Namespaces). ") unless XML.is_NCName(s)
     else
       # FIXME
       raise SaveError.new("FIXME: no namespace match against #{uri}")
