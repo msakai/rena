@@ -29,7 +29,7 @@ items.add_property(URI.parse("http://www.w3.org/1999/02/22-rdf-syntax-ns#_1"),
 item.
   add_property(RDF::Type, m.create_resource(RSS::Item)).
   add_property(RSS::Link, PlainLiteral.new("http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#14")).
-  add_property(RSS::Title, PlainLiteral.new("LEX/DB不具合発生中")).
+  add_property(RSS::Title, PlainLiteral.new("LEX/DB不具合発生中", "ja")).
   add_property(DC::Date, PlainLiteral.new("2004-02-10"))
 
 
