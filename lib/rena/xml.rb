@@ -657,7 +657,7 @@ class Writer
 
       if object.is_a?(Rena::PlainLiteral) and !object.lang and
           (ename = fold_uri(prop,false)) and parent.attribute(ename).nil?
-        parent.add_attribute(ename, object.to_s)
+        parent.add_attribute(ename, object.to_s.dup)
       else
         e = create_element[fold_uri(prop)]
         write_propertyElt(e, prop, object)
