@@ -14,10 +14,12 @@ class XMLReader
   def read(input, base = URI.parse(""))
     doc = REXML::Document.new(input)
     read_from_xml_document(doc, base)
+    nil
   end
 
   def read_from_xml_document(doc, base = URI.parse(""))
     parse_doc(doc, base)
+    nil
   end
 
   private
@@ -406,7 +408,7 @@ class XMLWriter
       e = REXML::Element.new(ename)
       parent << e
       parent << REXML::Text.new("\n")
-	  
+
       if object.is_a?(Rena::Literal)
         if object.is_a?(Rena::PlainLiteral) and object.lang
           e.add_attribute("xml:lang", object.lang.to_s)
@@ -415,7 +417,7 @@ class XMLWriter
           e.add_attribute(fold_uri(RDF::Namespace + "datatype"),
                           object.type.to_s)
         end
-	e << REXML::Text.new(object.to_s)
+	e << REXML::Text.new(object.to_s, true)
       else
 	if @written.member?(object)
 	  if object.uri
