@@ -1,0 +1,147 @@
+# -*- mode: ruby -*-
+#
+# Copyright (c) 2004 Masahiro Sakai <sakai@tom.sfc.keio.ac.jp>
+# You can redistribute it and/or modify it under the same term as Ruby.
+#
+
+# http://www.hpl.hp.com/semweb/rdql.htm#RDQL%20Grammar
+class Parser
+
+rule
+
+compilation_unit : query EOF
+
+query
+	: select_clause ( source_clause )?
+          triple_pattern_clause ( constraint_clause )? ( prefixes_clause )?
+
+select_clause
+	: SELECT var ( "," var )*
+	| SELECT "*"
+
+source_clause
+	: ( SOURCE | FROM ) source_selector
+
+source_selector : url
+
+triple_pattern_clause
+	: WHERE triple_pattern ( "," triple_pattern )*
+
+ConstraintClause
+	: SUCHTHAT expression ( ( "," | SUCHTHAT ) expression )*
+
+TriplePattern
+	: LPAREN var_or_uri "," var_or_uri "," var_or_literal RPAREN
+
+var_or_uri
+	: var
+	| uri
+
+var_or_literal
+	: var
+	| literal
+
+var
+	: "?" identifier
+
+prefixes_clause
+	: PREFIXES prefix_decl ( "," prefix_decl )*
+
+prefix_decl
+	: identifier FOR uri
+
+expression
+	: conditional_or_expression
+
+conditional_or_expression
+	: conditional_x_or_expression ( SC_OR conditional_x_or_expression )*
+
+conditional_x_or_expression : conditional_and_expression
+
+conditional_and_expression : value_logical ( SC_AND value_logical )*
+
+value_logical : string_equality_expression
+
+string_equality_expression
+	: numerical_logical ( STR_EQ numerical_logical | STR_NE numerical_logical )*
+
+numerical_logical : inclusive_or_expression
+
+inclusive_or_expression
+	: exclusive_or_expression ( BIT_OR exclusive_or_expression )*
+
+exclusive_or_expression
+	: 	and_expression ( BIT_XOR and_expression )*
+
+and_expression
+	: 	arithmetic_condition ( BIT_AND arithmetic_condition )*
+
+arithmetic_condition
+	: 	equality_expression
+
+equality_expression
+	: 	relational_expression ( EQ relational_expression | NEQ relational_expression )?
+
+relational_expression
+	: 	numeric_expression ( LT numeric_expression | GT numeric_expression | LE numeric_expression | GE numeric_expression )?
+
+numeric_expression
+	: 	shift_expression
+
+shift_expression
+	: 	additive_expression ( LSHIFT additive_expression | RSIGNEDSHIFT additive_expression | RUNSIGNEDSHIFT additive_expression )*
+
+additive_expression
+	: 	multiplicative_expression ( PLUS multiplicative_expression | MINUS multiplicative_expression )*
+
+multiplicative_expression
+	: 	unary_expression ( STAR unary_expression | SLASH unary_expression | REM unary_expression )*
+
+unary_expression
+	: 	unary_expression_not_plus_minus
+	| 	( PLUS unary_expression | MINUS unary_expression )
+
+unary_expression_not_plus_minus
+	: 	( TILDE | BANG ) unary_expression
+	| 	primary_expression
+
+primary_expression
+	: 	var
+	| 	literal
+	| 	function_call
+	| 	LPAREN expression RPAREN
+
+function_call
+	: 	identifier LPAREN arg_list RPAREN
+
+arg_list
+	: 	var_or_literal ( "," var_or_literal )*
+
+literal
+	: 	uri
+	| 	numeric_literal
+	| 	text_literal
+	| 	boolean_literal
+	| 	null_literal
+
+numeric_literal	: 	( INTEGER_LITERAL | FLOATING_POINT_LITERAL )
+text_literal	: 	STRING_LITERAL
+boolean_literal	: 	BOOLEAN_LITERAL
+null_literal	: 	NULL_LITERAL
+url		: 	uri
+uri		: 	"<" URI ">"
+identifier	:	IDENTIFIER
+
+end
+
+---- header
+
+module Rena
+module RDQL
+
+---- inner
+
+---- footer
+
+end # module RDQL
+end # module Rena
