@@ -13,7 +13,7 @@ require 'stringio'
 class TestXMLWriter < Test::Unit::TestCase
   include RenaTestUtils
 
-  def check_rdf(rdf_fpath)
+  def check_rdf(rdf_fpath, t = 'application/rdf+xml')
     uri = URI.parse("http://www.w3.org/2000/10/rdf-tests/rdfcore/" +
                       rdf_fpath.sub(/^.*approved_20031114\//, ''))    
 
@@ -21,7 +21,7 @@ class TestXMLWriter < Test::Unit::TestCase
     model1.load(rdf_fpath, :content_type => 'application/rdf+xml', :base => uri)
 
     io = StringIO.new
-    model1.save(io, :content_type => 'application/rdf+xml')
+    model1.save(io, :content_type => t)
     io.pos = 0
 
     model2 = Rena::MemModel.new
@@ -42,7 +42,7 @@ class TestXMLWriter < Test::Unit::TestCase
     s1 = model_to_hyperset(model1)
     s2 = model_to_hyperset(model2)
 
-    # puts io.string unless s1==s2
+    puts io.string unless s1==s2
 
     assert_equal(s1, s2,
                  "#{rdf_fpath} are not equal as hyperset")
@@ -61,6 +61,7 @@ class TestXMLWriter < Test::Unit::TestCase
         mname = "test_" + e.gsub(/-/, "_") + "__" + m[2]
         define_method(mname.intern){||
           check_rdf(rdf_fpath)
+          check_rdf(rdf_fpath, 'application/rss+xml')
         }
       end
     }

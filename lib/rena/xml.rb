@@ -560,8 +560,20 @@ class Writer
     false
   end
 
-  def force_toplevel?(object)
-    have_property?(object) and @rss # XXX
+  def force_toplevel?(prop, object)
+    if @rss
+      prop = prop.to_s
+      if prop == "http://purl.org/rss/1.0/items"
+        false
+      #elsif %r!http://www.w3.org/1999/02/22-rdf-syntax-ns#_\d+! =~ prop
+      #  true
+      else
+      #  false
+        true
+      end
+    else
+      true
+    end
   end
 
   def write_nodeElementList(rdf)
@@ -703,20 +715,23 @@ class Writer
         else
           if object.uri
             if have_property?(object)
-              if force_toplevel?(object)
+              if force_toplevel?(prop, object)
                 write_nodeElement(@root, object)
-                e.add_attribute(fold_uri(RDF::Namespace + "resource"), object.uri.to_s)
+                e.add_attribute(fold_uri(RDF::Namespace + "resource"),
+                                object.uri.to_s)
               else
                 write_nodeElement(e, object)
               end
             else
-              e.add_attribute(fold_uri(RDF::Namespace + "resource"), object.uri.to_s)
+              e.add_attribute(fold_uri(RDF::Namespace + "resource"),
+                              object.uri.to_s)
             end
           else
             # XXX
-            if force_toplevel?(object)
+            if have_property?(object) and force_toplevel?(prop, object)
               write_nodeElement(@root, object)
-              e.add_attribute(fold_uri(RDF::Namespace + "nodeID"), blank_node_to_nodeID(object))
+              e.add_attribute(fold_uri(RDF::Namespace + "nodeID"),
+                              blank_node_to_nodeID(object))
             else
               write_nodeElement(e, object)
             end
