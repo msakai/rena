@@ -143,7 +143,7 @@ class Reader
     end
 
     e.attributes.each_attribute{|attr|
-      if predicate = parse_propertyAttr(e, attr)
+      if predicate = parse_propertyAttr(attr)
         if predicate == RDF::Type
           subject.add_property(predicate,
                                @model.create_resource(URI.parse(attr.value)))
@@ -197,7 +197,7 @@ class Reader
         when "Literal"
           e.attributes.each_attribute{|attr|
             # rdfms-empty-property-elements/error003.rdf
-            raise LoadError.new if parse_propertyAttr(e, attr)
+            raise LoadError.new if parse_propertyAttr(attr)
           }
           object = parse_parseTypeLiteralPropertyElt(e, new_base, new_lang)
         else
@@ -227,7 +227,7 @@ class Reader
       # XXX
       unless object.is_a?(Rena::Literal)
         e.attributes.each_attribute{|attr|
-          if predicate2 = parse_propertyAttr(e, attr)
+          if predicate2 = parse_propertyAttr(attr)
             subject2 = object
             # FIXME
             if predicate == RDF::Type
@@ -286,7 +286,7 @@ class Reader
     # XXX: If there are no attributes or only the optional rdf:ID attribute i.
     flag = true
     e.attributes.each_attribute{|attr|
-      if parse_propertyAttr(e,attr)
+      if parse_propertyAttr(attr)
         flag = false
         break
       end
@@ -331,13 +331,13 @@ class Reader
   OldTerms_local_name = ["aboutEach", "aboutEachPrefix", "bagID"]
 =end
 
-  def parse_propertyAttr(e, attr)
+  def parse_propertyAttr(attr)
     if /^xml/i =~ attr.prefix
       nil
     elsif (attr.name==attr.expanded_name) and /^xml/i =~ attr.local_name # XXX
       nil
     else
-      ns = e.namespace(attr.prefix)
+      ns = attr.namespace(attr.prefix)
       return nil unless ns
 
       if ns==RDF::Namespace
@@ -589,8 +589,13 @@ class Writer
       parent << REXML::Text.new("\n")
 
       if object.is_a?(Rena::PlainLiteral)
-        e << REXML::Text.new(object.to_s, true)
-        e.add_attribute("xml:lang", object.lang.to_s) if object.lang
+        #if !object.lang and parent.attribute(ename).nil?
+        #  e.remove
+        #  parent.add_attribute(ename, object.to_s)
+        #else
+          e << REXML::Text.new(object.to_s, true)
+          e.add_attribute("xml:lang", object.lang.to_s) if object.lang
+        #end
       elsif object.is_a?(Rena::TypedLiteral)
         if XMLLiteral_DATATYPE_URI == object.type
           tmp = REXML::Document.new('<dummy>' + object.to_s + '</dummy>')
