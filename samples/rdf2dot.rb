@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby -Ku
+#!/usr/bin/env ruby
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), "../lib")
 require 'rena'
 require 'open-uri'
