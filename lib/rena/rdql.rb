@@ -24,7 +24,88 @@ class Query
   attr_accessor :constraints
   attr_accessor :prefixes
 
+  def exec(model = nil)
+    if model.nil?
+      model = MemModel.new
+      model.load(@source)
+    end
+
+    f = lambda{|i,binding|
+      if i < patterns.size
+        pattern = patterns[i]
+
+        model.each_statement{|stmt|
+          if new_binding = pattern.match(binding, stmt)
+            f.call(i+1, new_binding)
+          end
+        }
+      else
+        # constraintをチェック
+        yield binding
+      end
+    }
+
+    nil
+  end
 end # class Query
+
+
+class TriplePattern
+  def initialize(subject, predicate, object)
+    @subject   = subject
+    @predicate = predicate
+    @object    = object
+  end
+
+  def match(binding, stmt)
+    new_binding = binding.dup
+
+    if Symbol === @subject
+      if x = new_binding[@subject]
+        if ::URI === x
+          return false unless x == stmt.subject.uri
+        else
+          return false unless x == stmt.subject
+        end
+      else
+        new_binding[@subject] = stmt.subject
+      end
+    else
+      return false unless @subject == stmt.subject.uri
+    end
+
+    if Symbol === @predicate
+      if x = new_binding[@predicate]
+        if ::URI === x
+          return false unless x == stmt.predicate
+        else
+          return false unless x.uri == stmt.predicate
+        end
+      else
+        new_binding[@predicate] = stmt.predicate
+      end
+    else
+      return false unless @predicate == stmt.predicate
+    end
+
+    if Symbol === @object
+      if x = new_binding[@object]
+        if ::URI === x
+          return false unless x == stmt.object.uri
+        else
+          return false unless x == stmt.object
+        end
+      else
+        new_binding[@object] = stmt.object
+      end
+    else
+      return false unless @object == stmt.object or
+        (Rena::Resource === stmt.object and @object == stmt.object.uri)
+    end
+
+    new_binding
+  end
+end
 
 
 
@@ -60,12 +141,20 @@ class StringEqual
     @a = a
     @b = b
   end
+
+  def eval(binding)
+    @a.eval(binding) == @b.eval(binding)
+  end
 end
 
 class StringNotEqual
   def initialize(a,b)
     @a = a
     @b = b
+  end
+
+  def eval(binding)
+    @a.eval(binding) == @b.eval(binding)
   end
 end
 
@@ -159,43 +248,3 @@ end
 end #RDQL
 end #Rena
 
-
-
-
-if __FILE__ == $0
-require 'pp'
-
-# Query example 1: Retrieve the value of a known property of a known resource
-parser = Rena::RDQL::Parser.new
-pp parser.parse <<END
-SELECT ?x
-WHERE  (<http://somewhere/res1>, <http://somewhere/pred1>, ?x)
-END
-
-# Query example 2: constraints
-parser = Rena::RDQL::Parser.new
-pp parser.parse <<END
-SELECT ?a, ?b
-WHERE  (?a, <http://somewhere/pred1>, ?b)
-AND    ?b < 5
-END
-
-# Query example 3: paths in the graph
-parser = Rena::RDQL::Parser.new
-pp parser.parse <<END
-SELECT ?a, ?b
-WHERE (?a, <http://somewhere/pred1>, ?c) ,
-      (?c, <http://somewhere/pred2>, ?b)
-END
-
-# Query example 3: paths in the graph
-parser = Rena::RDQL::Parser.new
-pp parser.parse <<END
-SELECT ?x, ?y
-WHERE (<http://never/bag>, ?x, ?y)
-AND ! ( ?x eq <rsyn:type> && ?y eq <rsyn:Bag>)
-USING
-rsyn FOR <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-END
-  
-end
