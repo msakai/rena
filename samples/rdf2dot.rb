@@ -62,7 +62,7 @@ end
 
 if ARGV.empty?
   STDERR.puts "Usage:"
-  STDERR.puts "   rdf2dot.rb <filename> <content-type>"
+  STDERR.puts "   rdf2dot.rb [FILE] [Content-Type]"
   exit(1)
 end
 
