@@ -51,7 +51,9 @@ class MemModel < Model
       @properties = Hash.new
     end
 
-    def add_property(prop, object)
+    private
+
+    def add_property_impl(prop, object)
       prop = URI.parse(prop) unless prop.is_a?(URI)
       unless object.is_a?(Resource) or object.is_a?(Literal)
 	raise ArgumentError.new(object.inspect + " is not Rena::Resource nor Rena::Literal")
@@ -59,6 +61,8 @@ class MemModel < Model
       (@properties[prop] ||= Set[]) << object
       self
     end
+
+    public
 
     def each_property
       @properties.each{|prop, objects|

@@ -16,7 +16,33 @@ class Resource
   attr_reader :uri
 
   def add_property(prop, object)
+    add_property_impl(prop, object)
+  end
+
+  private
+
+  def add_property_impl(prop, object)
     raise RuntimeError.new("implement this method")
+  end
+
+  public
+
+  def have_property?(prop, obj)
+    prop = URI.parse(prop) unless prop.is_a?(URI)
+
+    each_property{|predicate, object|
+      return true if predicate == prop and object == obj
+    }
+    false
+  end
+
+  def get_property(prop)
+    prop = URI.parse(prop) unless prop.is_a?(URI)
+
+    each_property{|predicate, object|
+      return object if predicate == prop
+    }
+    nil
   end
 
   def [](prop)
@@ -24,7 +50,7 @@ class Resource
 
     result = []
     each_property{|predicate, object|
-      result << object if prop == predicate
+      result << object if predicate == prop
     }
     result
   end
