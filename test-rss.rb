@@ -30,14 +30,5 @@ item.
   add_property(RSS::Title, PlainLiteral.new("LEX/DB不具合発生中")).
   add_property(DC::Date, PlainLiteral.new("2004-02-10"))
 
-require 'pp'
 
-writer = XMLWriter.new
-#writer.namespaces[""]    = "http://purl.org/rss/1.0/"
-#writer.namespaces["rdf"] = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-#writer.namespaces["dc"]  = "http://purl.org/dc/elements/1.1/"
-#writer.namespaces["foaf"] = "http://xmlns.com/foaf/0.1/"
-
-doc = writer.model2rdfxml(m)
-#pp doc
-doc.write(REXML::Output.new(STDOUT, "shift_jis"))
+m.save(STDOUT, :charset=>"shift_jis")

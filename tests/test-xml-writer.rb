@@ -22,9 +22,8 @@ class TestXMLWriter < Test::Unit::TestCase
     model1.load(rdf_fpath, :type => 'application/rdf+xml', :base => uri)
 
     tmpfile = Tempfile.new('rena-test-nt-writer')
-    writer = Rena::XMLWriter.new
-    tmpfile.write(writer.model2rdfxml(model1))
     tmpfile.close(false)
+    model1.save(tmpfile.path, :type => 'application/rdf+xml')
 
     model2 = Rena::MemModel.new
     model2.load(tmpfile.path, :type => 'application/rdf+xml', :base => uri)

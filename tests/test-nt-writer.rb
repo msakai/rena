@@ -22,9 +22,8 @@ class TestNTWriter < Test::Unit::TestCase
     model1.load(rdf_fpath, :type => 'text/ntriples', :base => uri)
 
     tmpfile = Tempfile.new('rena-test-nt-writer')
-    writer = Rena::NTWriter.new
-    tmpfile.write(writer.model2nt(model1))
     tmpfile.close(false)
+    model1.save(tmpfile, :type => 'text/ntriples')
 
     model2 = Rena::MemModel.new
     model2.load(tmpfile.path, :type => 'text/ntriples', :base => uri)

@@ -133,7 +133,7 @@ end # class Statement
 
 class Model
 
-  def load(filename, params)
+  def load(input, params = {})
     case params[:type]
     when 'text/ntriples'
       reader = NTReader.new
@@ -142,14 +142,17 @@ class Model
       reader = XMLReader.new
     end
     reader.model = self
-    open(filename, 'rb'){|f|
-      reader.read(f, params)
-    }
+
+    if input.respond_to? :gets
+      reader.read(input, params)
+    else
+      open(input, 'rb'){|f| reader.read(f, params) }
+    end
+
     nil
   end
 
-=begin
-  def save(filename, params)
+  def save(output, params = {})
     case params[:type]
     when 'text/ntriples'
       writer = NTWriter.new
@@ -157,12 +160,15 @@ class Model
     else
       writer = XMLWriter.new
     end
-    open(filename, 'wb'){|f|
-      writer.write(f, self, params)
-    }
+
+    if output.respond_to? :puts
+      writer.write(output, self, params)
+    else
+      open(output, 'wb'){|f| writer.write(f, self, params) }
+    end
+
     nil
   end
-=end
 
   def statements
     result = []
