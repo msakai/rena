@@ -8,6 +8,7 @@ module Rena
 
 class Literal
   def initialize(str)
+    str.unpack('U*')
     @str = str
     @str.freeze
   end

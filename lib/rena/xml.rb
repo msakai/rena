@@ -266,8 +266,10 @@ class Reader
   end
 
   def parse_parseTypeLiteralPropertyElt(e, base, lang=nil)
-    s = exclusive_xml_canonicalization(e)
-    TypedLiteral.new(s, XMLLiteral_DATATYPE_URI)
+    io = StringIO.new
+    c14n = ExecC14N.new(io)
+    c14n.run(e)    
+    TypedLiteral.new(io.string, XMLLiteral_DATATYPE_URI)
   end
 
   def parse_parseTypeOtherPropertyElt(e, base, lang=nil)
@@ -359,55 +361,13 @@ class Reader
         end
       end
 
-      URI.parse(ns + attr.local_name)
+      uri = URI.parse(ns + attr.local_name)
+      uri.freeze
+      uri
     end
   end
 
   private
-
-  def create_xpath(e)
-    parent = e.parent
-    if parent.nil?
-      ''
-    else
-      create_xpath(parent) + '/*[' + parent.elements.index(e).to_s + ']'
-    end
-  end
-
-=begin
-  # Exclusive XML Canonicalization
-  def exclusive_xml_canonicalization(e)
-    # FIXME
-    begin
-      require 'tempfile'
-
-      xmlfile   = Tempfile.new('rena-xml')
-      e.document.write(xmlfile)
-      xmlfile.close(false)
-
-      xpathfile = Tempfile.new('rena-xpath')
-      xpath = create_xpath(e) + '/descendant::node()'
-      xpath = "(//@* | //namespace::* | " + xpath + ")"
-      xpathfile.puts("<XPath>", xpath, "</XPath>")
-      xpathfile.close(false)
-
-      s = `./testC14N --exc-with-comments #{xmlfile.path.sub(%!/cygdrive/c!,"c:")} #{xpathfile.path.sub(%!/cygdrive/c!,"c:")}` # XXX
-      s.gsub!(/\r\n/, "\n")
-      s
-    rescue
-      s = ''
-      e.children.each{|child| child.write(s) }
-      s
-    end
-  end
-=end
-
-  def exclusive_xml_canonicalization(e)
-    io = StringIO.new
-    c14n = ExecC14N.new(io)
-    c14n.run(e)
-    io.string
-  end
 
   def lookup_nodeID(nodeID)
     @blank_nodes[nodeID] ||= @model.create_resource
