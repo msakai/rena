@@ -83,9 +83,11 @@ class Model
     end
 
     case content_type
-    when 'text/ntriples'
+    when /\Atext\/ntriples\Z/i
       reader = NTriples::Reader.new
-    when 'application/rdf+xml', 'text/xml', 'application/xml'
+    #when /application\/trix(\+xml)?/i # http://www.kanzaki.com/memo/2004/02/29-1
+    #when /application\/turtle/i # http://www.kanzaki.com/memo/2004/03/27-1
+    when /\Aapplication\/rdf\+xml\Z/i, /\Atext\/xml\Z/i, /\Aapplication\/xml\Z/i
       reader = XML::Reader.new
     else
       raise RuntimeError.new("unsupported content-type: " + content_type.inspect)
@@ -98,25 +100,41 @@ class Model
   public
 
   def save(output, params = {})
+    if output.respond_to? :puts
+      writer = setup_writer(output, params)
+      writer.write(output, self, params)
+    else
+      open(output, 'wb'){|f|
+        writer = setup_writer(f, params)
+        writer.write(f, self, params)
+      }
+    end
+
+    nil
+  end
+
+  private
+
+  def setup_writer(io, params)
     content_type = params[:content_type]
-    
+    # for open-uri
+    if content_type.nil? and io.respond_to? :content_type
+      content_type ||= io.content_type
+    end
+
     case content_type
-    when 'text/ntriples'
+    when /\Atext\/ntriples\Z/i
       writer = NTriples::Writer.new
-    when 'application/rdf+xml', 'text/xml', 'application/xml'
+    when /\Aapplication\/rdf\+xml\Z/i, /\Atext\/xml\Z/i, /\Aapplication\/xml\Z/i
       writer = XML::Writer.new
     else
       raise RuntimeError.new("unsupported content-type: " + content_type.inspect)
     end
 
-    if output.respond_to? :puts
-      writer.write(output, self, params)
-    else
-      open(output, 'wb'){|f| writer.write(f, self, params) }
-    end
-
-    nil
+    writer
   end
+
+  public
 
   def statements
     result = []

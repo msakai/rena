@@ -42,9 +42,8 @@ class TestNTWriter < Test::Unit::TestCase
 
     s1 = model_to_hyperset(model1)
     s2 = model_to_hyperset(model2)
-
     
-    puts io.string unless s1==s2
+    #puts io.string unless s1==s2
 
     assert_equal(s1, s2,
                  "#{rdf_fpath} are not equal as hyperset")
