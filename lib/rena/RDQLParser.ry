@@ -27,10 +27,10 @@ source_selector : url
 triple_pattern_clause
 	: WHERE triple_pattern ( "," triple_pattern )*
 
-ConstraintClause
+constraint_clause
 	: SUCHTHAT expression ( ( "," | SUCHTHAT ) expression )*
 
-TriplePattern
+triple_pattern
 	: LPAREN var_or_uri "," var_or_uri "," var_or_literal RPAREN
 
 var_or_uri
