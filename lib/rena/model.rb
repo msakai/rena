@@ -45,7 +45,19 @@ class Resource
     nil
   end
 
+  def get_property_values(prop)
+    prop = URI.parse(prop) unless prop.is_a?(URI)
+
+    result = Set[]
+    each_property{|predicate, object|
+      result << object if predicate == prop
+    }
+    result    
+  end
+
   def [](prop)
+    STDERR.puts("warning: Rena::Resource#[] is deprecated. Use Rena::Resource#get_property or Rena::Resource#get_property_values instead.")
+
     prop = URI.parse(prop) unless prop.is_a?(URI)
 
     result = []
