@@ -53,6 +53,18 @@ class TestReaders < Test::Unit::TestCase
                  "#{nt_fpath} and #{rdf_fpath} are not equal as hyperset")
   end
 
+  def check_error(rdf_fpath)
+    model = Rena::MemModel.new
+
+    base = URI.parse("http://www.w3.org/2000/10/rdf-tests/rdfcore/" +
+                       rdf_fpath.sub(/^.*approved_20031114\//, ''))
+
+    assert_raise(StandardError, RuntimeError){ # XXX
+      model.load(rdf_fpath,
+                 :type => 'application/rdf+xml',
+                 :base => base)
+    }
+  end
   
 
   base = File.join(File.dirname(__FILE__), "approved_20031114")
@@ -66,9 +78,18 @@ class TestReaders < Test::Unit::TestCase
     Find.find(fname){|rdf_fpath|
       if m = %r!(.*/(test[^/]*))\.rdf$!.match(rdf_fpath) and
           File.exist?(nt_fpath = m[1] + ".nt")
-        mname = "test_" + e.gsub(/-/, "_") + "__" + m[2]
+        mname = "test_" + e.gsub(/-/, "_") + "__" + m[2].gsub(/-/, "_")
         define_method(mname.intern){||
           check_rdf(nt_fpath, rdf_fpath)
+        }
+      end
+    }
+
+    Find.find(fname){|rdf_fpath|
+      if m = %r!(.*/(error[^/]*))\.rdf$!.match(rdf_fpath)
+        mname = "test_" + e.gsub(/-/, "_") + "__" + m[2].gsub(/-/, "_")
+        define_method(mname.intern){||
+          check_error(rdf_fpath)
         }
       end
     }

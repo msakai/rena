@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (c) 2004 Masahiro Sakai <sakai@tom.sfc.keio.ac.jp>
+# You can redistribute it and/or modify it under the same term as Ruby.
+#
+
 require 'rexml/document'
 require 'stringio'
 require 'rena/rdf'
@@ -9,6 +14,7 @@ class XMLReader
   def initialize
     @model = nil
     @blank_nodes = {}
+    @used_id = []
   end
   attr_accessor :model
 
@@ -94,14 +100,36 @@ class XMLReader
 
     # FIXME: nodeElementURIs であることをチェック
 
-    if id = get_attribute(e, "ID", RDF::Namespace)
-      subject = @model.create_resource(base + ("#" + id.value))
-    elsif nodeID = get_attribute(e, "nodeID", RDF::Namespace)
+    id     = get_attribute(e, "ID",     RDF::Namespace)
+    nodeID = get_attribute(e, "nodeID", RDF::Namespace)
+    about  = get_attribute(e, "about",  RDF::Namespace)
+
+    if [id, nodeID, about].compact.size > 1
+      raise RuntimeError.new
+    end
+
+    if id
+      uri = base + ("#" + id.value)
+      if @used_id.member?(uri)
+        raise RuntimeError.new("two elements cannot use the same ID")
+      else
+        @used_id.push uri
+      end
+      subject = @model.create_resource(uri)
+    elsif nodeID
+      # FIXME: rdfms-syntax-incomplete/error001.rdf
       subject = lookup_nodeID(nodeID.value)
-    elsif about = get_attribute(e, "about", RDF::Namespace)
+    elsif about
       subject = @model.create_resource(base + about.value)
     else
       subject = @model.create_resource
+    end
+
+    # FIXME
+    if e.namespace == RDF::Namespace
+      if ["RDF","ID","about","parseType","resource","nodeID","datatype","li","aboutEach","aboutEachPrefix","bagID"].member?(e.local_name)
+        raise RuntimeError.new
+      end
     end
 
     unless e.namespace == RDF::Namespace and e.name == "Description"
@@ -114,7 +142,7 @@ class XMLReader
         if predicate == RDF::Type
           subject.add_property(predicate,
                                @model.create_resource(URI.parse(attr.value)))
-        else # FIXME: propertyAttrであることをチェック?
+        else
           subject.add_property(predicate,
                                PlainLiteral.new(attr.value, lang))
         end
@@ -134,6 +162,13 @@ class XMLReader
       new_base = update_base(base, e)
       new_lang = update_lang(lang, e)
 
+      # FIXME
+      if e.namespace == RDF::Namespace
+        if ["RDF","ID","about","parseType","resource","nodeID","datatype","Description","aboutEach","aboutEachPrefix","bagID"].member?(e.local_name)
+          raise RuntimeError.new
+        end
+      end
+
       if e.namespace==RDF::Namespace and e.name == "li"
         # List Expansion Rules
         predicate = URI.parse(RDF::Namespace + "_#{li_counter+=1}")
@@ -141,7 +176,14 @@ class XMLReader
         predicate = URI.parse(e.namespace + e.name)
       end
 
-      if parseType = get_attribute(e, "parseType", RDF::Namespace)
+      parseType = get_attribute(e, "parseType", RDF::Namespace)
+
+      if parseType
+        # XXX
+        if get_attribute(e, "resource", RDF::Namespace)
+          raise RuntimeError.new('specifying an rdf:parseType of "Literal" and an rdf:resource attribute at the same time is an error.')
+        end
+
         case parseType.value
         when "Resource"
           object = parse_parseTypeResourcePropertyElt(e, new_base, new_lang)
@@ -163,7 +205,15 @@ class XMLReader
       subject.add_property(predicate, object)
 
       if id = get_attribute(e, "ID", RDF::Namespace)
-        @model.create_resource(new_base + ("#" + id.value)).
+        uri = new_base + ("#" + id.value)
+
+        if @used_id.member?(uri)
+          raise RuntimeError.new("two elements cannot use the same ID")
+        else
+          @used_id.push uri
+        end
+
+        @model.create_resource(uri).
           add_property(RDF::Type, @model.create_resource(RDF::Statement)).
           add_property(RDF::Subject, subject).
           add_property(RDF::Predicate, @model.create_resource(predicate)).
@@ -250,6 +300,7 @@ class XMLReader
       if resource = get_attribute(e, "resource", RDF::Namespace)
         @model.create_resource(base + resource.value)
       elsif nodeID = get_attribute(e, "nodeID", RDF::Namespace)
+        # FIXME: rdfms-syntax-incomplete/error001.rdf
         lookup_nodeID(nodeID.value)     
       else
         @model.create_resource
@@ -267,19 +318,30 @@ class XMLReader
   OldTerms_local_name = ["aboutEach", "aboutEachPrefix", "bagID"]
 =end
 
-  RDF_SyntaxNames = ['RDF', 'Description', 'ID', 'about', 'parseType', 'resource', 'li', 'nodeID', 'datatype']
-
   def parse_propertyAttr(e, attr)
     if /^xml/i =~ attr.prefix
       nil
     elsif (attr.name==attr.expanded_name) and /^xml/i =~ attr.local_name # XXX
       nil
-    elsif (ns = e.namespace(attr.prefix)) and
-        (ns != RDF::Namespace or
-         not RDF_SyntaxNames.member?(attr.local_name))
-      URI.parse(ns + attr.local_name)
     else
-      nil
+      ns = e.namespace(attr.prefix)
+      return nil unless ns
+
+      if ns==RDF::Namespace
+        if ["aboutEach", "aboutEachPrefix", "bagID"].member?(attr.local_name)
+          raise RuntimeError.new("rdf:aboutEach, rdf:aboutEachPrefix and rdf:bagID are obsoleted")
+        end
+
+        if ["RDF", "li", "Description"].member?(attr.local_name)
+          raise RuntimeError.new
+        end
+
+        if ["ID", "about", "parseType", "resource", "nodeID", "datatype"].member?(attr.local_name)
+          return nil
+        end
+      end
+
+      URI.parse(ns + attr.local_name)
     end
   end
 

@@ -1,3 +1,7 @@
+#
+# Copyright (c) 2004 Masahiro Sakai <sakai@tom.sfc.keio.ac.jp>
+# You can redistribute it and/or modify it under the same term as Ruby.
+#
 
 # http://www.purl.org/rss/1.0/spec
 module Rena::RSS
