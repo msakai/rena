@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), "../lib")
 require 'pp'
 require 'open-uri'
 require 'rena'
@@ -11,6 +12,7 @@ DC  = Rena::DC
 
 model = Rena::MemModel.new
 model.load("http://www.tom.sfc.keio.ac.jp/~sakai/rss/sfc-media-center.rdf")
+#model.load("http://web.sfc.keio.ac.jp/~s01397ms/d/t.rdf")
 
 channel = model.lookup_resource(RSS::Channel)
 
