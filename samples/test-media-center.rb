@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 require 'pp'
+require 'open-uri'
 require 'rena'
 require 'rena/rss'
 require 'rena/dc'
@@ -9,9 +10,7 @@ RSS = Rena::RSS
 DC  = Rena::DC
 
 model = Rena::MemModel.new
-model.load("sfc-media-center.rdf",
-           :type => 'application/rdf+xml',
-           :base => URI.parse("http://www.tom.sfc.keio.ac.jp/~sakai/rss/sfc-media-center.rdf"))
+model.load("http://www.tom.sfc.keio.ac.jp/~sakai/rss/sfc-media-center.rdf")
 
 channel = model.lookup_resource(RSS::Channel)
 
