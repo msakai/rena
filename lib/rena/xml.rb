@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'rexml/document'
+require 'stringio'
 require 'rena/rdf'
 
 module Rena
@@ -93,11 +94,11 @@ class XMLReader
 
     # FIXME: nodeElementURIs であることをチェック
 
-    if id = e.attribute("ID", RDF::Namespace)
+    if id = get_attribute(e, "ID", RDF::Namespace)
       subject = @model.create_resource(base + ("#" + id.value))
-    elsif nodeID = e.attribute("nodeID", RDF::Namespace)
+    elsif nodeID = get_attribute(e, "nodeID", RDF::Namespace)
       subject = lookup_nodeID(nodeID.value)
-    elsif about = e.attribute("about", RDF::Namespace)
+    elsif about = get_attribute(e, "about", RDF::Namespace)
       subject = @model.create_resource(base + about.value)
     else
       subject = @model.create_resource
@@ -140,7 +141,7 @@ class XMLReader
         predicate = URI.parse(e.namespace + e.name)
       end
 
-      if parseType = e.attribute("parseType", RDF::Namespace)
+      if parseType = get_attribute(e, "parseType", RDF::Namespace)
         case parseType.value
         when "Resource"
           object = parse_parseTypeResourcePropertyElt(e, new_base, new_lang)
@@ -161,7 +162,7 @@ class XMLReader
 
       subject.add_property(predicate, object)
 
-      if id = e.attribute("ID", RDF::Namespace)
+      if id = get_attribute(e, "ID", RDF::Namespace)
         @model.create_resource(new_base + ("#" + id.value)).
           add_property(RDF::Type, @model.create_resource(RDF::Statement)).
           add_property(RDF::Subject, subject).
@@ -218,7 +219,7 @@ class XMLReader
 
   def parse_literalPropertyElt(e, base, lang=nil)
     s = e.children.select{|c| c.is_a?(REXML::Text) }.map{|c| c.value }.join('')
-    if attr_type = e.attribute("datatype", RDF::Namespace)
+    if attr_type = get_attribute(e, "datatype", RDF::Namespace)
       TypedLiteral.new(s, base + attr_type.value)
     else
       PlainLiteral.new(s, lang)
@@ -246,9 +247,9 @@ class XMLReader
     if flag
       PlainLiteral.new('', lang)
     else
-      if resource = e.attribute("resource", RDF::Namespace)
+      if resource = get_attribute(e, "resource", RDF::Namespace)
         @model.create_resource(base + resource.value)
-      elsif nodeID = e.attribute("nodeID", RDF::Namespace)
+      elsif nodeID = get_attribute(e, "nodeID", RDF::Namespace)
         lookup_nodeID(nodeID.value)     
       else
         @model.create_resource
@@ -322,19 +323,28 @@ class XMLReader
 =end
 
   def exclusive_xml_canonicalization(e)
-    require 'stringio'
     io = StringIO.new
     c14n = ExecC14N.new(io)
     c14n.run(e)
     io.string
   end
 
-
   def lookup_nodeID(nodeID)
     @blank_nodes[nodeID] ||= @model.create_resource
   end
 
+  # to avoid bugs of REXML::Element.
+  def get_attribute(e, name, namespace)
+    e.prefixes.each{|prefix|
+      if e.namespace(prefix) == namespace
+        return e.attributes.get_attribute(prefix + ':' + name)
+      end
+    }
+    nil
+  end
 
+
+  # Exclusive XML Canonicalization
   class ExecC14N
     def initialize(output)
       @output = output
@@ -443,7 +453,7 @@ class XMLReader
       s.gsub!(/\r/, '&#xD;')      
       s
     end
-  end
+  end # class ExecC14N
 
 end # class XMLReader
 
