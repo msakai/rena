@@ -2,14 +2,19 @@ require 'uri'
 require 'set'
 
 # XXX
+a = URI.parse("http://ruby-lang.org/")
+b = URI.parse("http://ruby-lang.org/")
+unless a.eql?(b)
+  class URI::Generic
+    def hash
+      component.inject(0){|result,item|
+        result ^ (self.__send__(item).hash)
+      }
+    end
 
-class URI::Generic
-  def hash
-    to_s.hash
-  end
-
-  def eql?(other)
-    URI===other and self==other
+    def eql?(other)
+      self==other
+    end
   end
 end
 
