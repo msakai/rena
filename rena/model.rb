@@ -147,8 +147,17 @@ class Model
     resource
   end
 
+  def lookup_resource(uri)
+    uri = URI.parse(uri) unless uri.is_a?(URI)
+    lookup_resource_impl(uri)
+  end
+
+  def lookup_resource_impl(uri)
+    raise RuntimeError.new("implement this method")
+  end
+
   def [](uri)
-    create_resource(uri)
+    lookup_resource(uri)
   end
 
   def each_resource

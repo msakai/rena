@@ -26,6 +26,10 @@ class MemModel < Model
     end
   end
 
+  def lookup_resource_impl(uri)
+    @uri_to_resources[uri]
+  end
+
   def each_statement(&block)
     each_resource{|subject|
       subject.each_property{|prop, object|

@@ -1,7 +1,6 @@
 require 'uri'
 require 'set'
 
-
 # XXX
 
 class URI::Generic
@@ -26,18 +25,29 @@ if $0 == __FILE__
 
 require 'pp'
 
-channel_uri = URI.parse("http://www.tom.sfc.keio.ac.jp/~sakai/rss/sfc-media-center.rdf")
+require 'rena/rss'
+require 'rena/dc'
+RDF = Rena::RDF
+RSS = Rena::RSS
+DC  = Rena::DC
+
+model = Rena::MemModel.new
 
 reader = Rena::XMLReader.new
-reader.model = Rena::MemModel.new
-reader.read(File.open("sfc-media-center.rdf"), channel_uri)
+reader.model = model
+reader.read(File.open("sfc-media-center.rdf"),
+            URI.parse("http://www.tom.sfc.keio.ac.jp/~sakai/rss/sfc-media-center.rdf"))
 
-channel = reader.model[channel_uri]
-channel["http://purl.org/rss/1.0/items"][0].each_property{|prop, item|
-  next unless %r!\Ahttp://www.w3.org/1999/02/22-rdf-syntax-ns#_(\d+)\Z! =~ prop.to_s
-  puts item["http://purl.org/rss/1.0/link"][0]
-  puts item["http://purl.org/rss/1.0/title"][0]
-  puts item["http://purl.org/dc/elements/1.1/date"][0]
+channel = model.lookup_resource(RSS::Channel)
+
+model.each_resource{|res|
+  next unless res[RDF::Type].include?(channel)
+  res[RSS::Items][0].each_property{|prop, item|
+    next unless %r!\Ahttp://www.w3.org/1999/02/22-rdf-syntax-ns#_(\d+)\Z! =~ prop.to_s
+    puts item[RSS::Link][0]
+    puts item[RSS::Title][0]
+    puts item[DC::Date][0]
+  }
 }
 
 end

@@ -4,8 +4,8 @@ include Rena
 
 reader = XMLReader.new
 reader.model = MemModel.new
-reader.read(File.open("knu/foaf.rdf"), "")
-#reader.read(File.open("foaf.rdf"), "")
+#reader.read(File.open("knu/foaf.rdf"), "")
+reader.read(File.open("foaf.rdf"), "")
 #require 'open-uri'
 #reader.read(StringIO.new(open("http://web.sfc.keio.ac.jp/~s01397ms/foaf.rdf").read), "")
 
@@ -25,3 +25,4 @@ doc.write(REXML::Output.new(STDOUT, "utf-8"))
 #io = StringIO.new
 #doc.write(io)
 #Uconv::
+

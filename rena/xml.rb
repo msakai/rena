@@ -408,11 +408,16 @@ class XMLWriter
       parent << REXML::Text.new("\n")
 	  
       if object.is_a?(Rena::Literal)
+        if object.is_a?(Rena::PlainLiteral) and object.lang
+          e.add_attribute("xml:lang", object.lang.to_s)
+        end
+        if object.is_a?(Rena::TypedLiteral)
+          e.add_attribute(fold_uri(RDF::Namespace + "datatype"),
+                          object.type.to_s)
+        end
 	e << REXML::Text.new(object.to_s)
       else
-	unless @written.member?(object) or !have_property?(object)
-	  write_resource(e, object)
-	else
+	if @written.member?(object)
 	  if object.uri
 	    e.add_attribute(fold_uri(RDF::Namespace + "resource"),
 			    object.uri.to_s)
@@ -420,6 +425,18 @@ class XMLWriter
 	    e.add_attribute(fold_uri(RDF::Namespace + "nodeID"),
 			    blank_node_to_nodeID(object))
 	  end
+        else
+          if object.uri
+            if have_property?(object)
+              write_resource(e, object)
+            else
+              e.add_attribute(fold_uri(RDF::Namespace + "resource"),
+                              object.uri.to_s)
+            end
+          else
+            write_resource(e, object) # XXX
+          end
+
 	  @written << object
 	end
       end
@@ -440,9 +457,9 @@ class XMLWriter
 
     uri = uri.dup
     if s = uri.fragment
-      uri.fragment = nil
+      uri.fragment = ''
     elsif s = uri.query
-      uri = uri.query = nil
+      uri = uri.query = ''
     elsif path = uri.path
       %r!\A(.*/)([^/]+)\Z! =~ path
       uri.path = $1
@@ -466,6 +483,15 @@ class XMLWriter
 
   def blank_node_to_nodeID(resource)
     e = @blank_nodes_to_element[resource]
+
+    # XXX
+=begin
+    unless e
+      e = REXML::Element.new(fold_uri(RDF::Namespace + "Description"))
+      @root << e
+    end
+=end
+
     if nodeID = e.attribute("nodeID", RDF::Namespace)
       nodeID.value
     else

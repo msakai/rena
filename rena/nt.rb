@@ -81,4 +81,14 @@ class NTReader
   end
 end
 
+
+
+=begin
+class NTWriter
+  def initialize
+  end
+end
+=end
+
+
 end #module Rena
