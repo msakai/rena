@@ -24,7 +24,6 @@ end
 
 
 require 'rena/model'
-#require 'rena/n3'
 require 'rena/xml'
 require 'rena/nt'
 require 'rena/memmodel'

@@ -4,11 +4,10 @@
 # You can redistribute it and/or modify it under the same term as Ruby.
 #
 
-require 'rexml/document'
-
 module Rena
+module NTriples
 
-class NTReader
+class Reader
   def initialize
     @model = nil
     @blank_nodes = {}
@@ -21,7 +20,7 @@ class NTReader
       next if /\A\s*\Z/ =~ line
 
       if line.sub!(/\A\s*<([^>]*)>/, '')
-	subject = @model.create_resource(URI.parse($1))
+	subject = @model.create_resource(URI.parse(unescape($1)))
       elsif line.sub!(/\A\s*_:([A-Za-z][A-Za-z0-9]*)/, '')
 	subject = lookup_nodeID($1)
       else
@@ -29,7 +28,7 @@ class NTReader
       end
 
       if line.sub!(/\A\s*<([^>]*)>/, '')
-	predicate = URI.parse($1)
+	predicate = URI.parse(unescape($1)) # ???
       else
 	raise RuntimeError.new(line.inspect)
       end
@@ -42,26 +41,7 @@ class NTReader
 	str  = $1
 	lang = $2
 	type = $3
-
-	str.gsub!(/\\([^u]|u([0-9a-fA-F]{4}))/){
-	  case $1
-	  when "\\" #"
-	  when '"'
-	    $1
-	  when "n"
-	    "\n"
-	  when "r"
-	    "\r"
-	  when "t"
-	    "\t"
-	  else
-	    if $2
-	      [$2.hex].pack("U")
-	    else
-	      raise RuntimeError.new("\\#{$1} is invalid escape")
-	    end
-	  end
-	}
+        str = unescape(str)
 
 	if type
 	  object = TypedLiteral.new(str, URI.parse(type))
@@ -84,11 +64,33 @@ class NTReader
   def lookup_nodeID(nodeID)
     @blank_nodes[nodeID] ||= @model.create_resource
   end
-end
+
+  def unescape(str)
+    str.gsub(/\\([^u]|u([0-9a-fA-F]{4}))/){
+      case $1
+      when "\\" #"
+      when '"'
+        $1
+      when "n"
+        "\n"
+      when "r"
+        "\r"
+      when "t"
+        "\t"
+      else
+        if $2
+          [$2.hex].pack("U")
+        else
+          raise RuntimeError.new("\\#{$1} is invalid escape")
+        end
+      end
+    }    
+  end
+end # class Reader
 
 
 
-class NTWriter
+class Writer
 
   def write(io, m, params)
     self.class.write_model(m, io)
@@ -130,7 +132,8 @@ class NTWriter
 
     nil
   end
-end
+end # class Writer
 
 
+end #module NTriples
 end #module Rena

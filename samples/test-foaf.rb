@@ -8,4 +8,4 @@ model = MemModel.new
 #            :type => 'application/rdf+xml',
 #            :base => URI.parse("http://web.sfc.keio.ac.jp/~s01397ms/foaf.rdf"))
 model.load("http://web.sfc.keio.ac.jp/~s01397ms/foaf.rdf")
-model.save(STDOUT, :type => 'application/rdf+xml')
+model.save(STDOUT, :content_type => 'application/rdf+xml')

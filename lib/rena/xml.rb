@@ -9,8 +9,9 @@ require 'stringio'
 require 'rena/rdf'
 
 module Rena
+module XML
 
-class XMLReader
+class Reader
   def initialize
     @model = nil
     @blank_nodes = {}
@@ -201,7 +202,8 @@ class XMLReader
         end
       elsif e.elements.size == 1
         object = parse_resourcePropertyElt(e, new_base, new_lang)
-      elsif e.children.any?{|c| c.is_a? REXML::Text }
+      elsif e.children.any?{|c| c.is_a? REXML::Text } or
+          get_attribute(e, "datatype", RDF::Namespace) # ???
         object = parse_literalPropertyElt(e, new_base, new_lang)
       else
         object = parse_emptyPropertyElt(e, new_base, new_lang)
@@ -522,12 +524,12 @@ class XMLReader
     end
   end # class ExecC14N
 
-end # class XMLReader
+end # class Reader
 
 
 
 
-class XMLWriter
+class Writer
   def initialize
     @namespaces = Hash.new
     @namespaces["rdf"] = RDF::Namespace
@@ -738,8 +740,9 @@ class XMLWriter
     doc.write(REXML::Output.new(io, params[:charset] || 'utf-8'))
     nil
   end
-end # class XMLWriter
+end # class Writer
 
 
+end # module XML
 end # module Rena
 

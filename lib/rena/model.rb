@@ -9,12 +9,23 @@ module Rena
 class Literal
   def initialize(str)
     @str = str
+    @str.freeze
   end
 
   def to_s
     @str
   end
   alias to_str to_s
+
+  def nt
+    s = @str.dup
+    s.gsub!(/\\/, "\\\\")
+    s.gsub!(/"/, "\\\"")
+    s.gsub!(/\n/, "\\n")
+    s.gsub!(/\r/, "\\r")
+    s.gsub!(/\t/, "\\t")
+    '"' + s + '"'
+  end
 end
 
 
@@ -22,6 +33,7 @@ class PlainLiteral < Literal
   def initialize(str, lang = nil)
     super(str)
     @lang = lang
+    @lang.freeze
   end
   attr_reader :lang
 
@@ -45,7 +57,7 @@ class PlainLiteral < Literal
   end
 
   def nt
-    s = to_s.inspect # FIXME
+    s = super
     s << "@" + @lang if @lang 
     s
   end
@@ -56,6 +68,7 @@ class TypedLiteral < Literal
   def initialize(str, type)
     super(str)
     @type = type
+    @type.freeze
   end
   attr_reader :type
 
@@ -79,7 +92,7 @@ class TypedLiteral < Literal
   end
 
   def nt
-    s = to_s.inspect
+    s = super
     s << "^^<" + @type.to_s + ">" if @type
     s
   end
@@ -155,19 +168,19 @@ class Model
   private
 
   def setup_reader(io, params)
-    type = params[:type]
+    content_type = params[:content_type]
     # for open-uri
-    if type.nil? and io.respond_to? :content_type
-      type ||= io.content_type
+    if content_type.nil? and io.respond_to? :content_type
+      content_type ||= io.content_type
     end
 
-    case type
+    case content_type
     when 'text/ntriples'
-      reader = NTReader.new
+      reader = NTriples::Reader.new
     when 'application/rdf+xml', 'text/xml', 'application/xml'
-      reader = XMLReader.new
+      reader = XML::Reader.new
     else
-      raise RuntimeError.new("unsupported content-type: " + type.inspect)
+      raise RuntimeError.new("unsupported content-type: " + content_type.inspect)
     end
     reader.model = self
 
@@ -177,15 +190,15 @@ class Model
   public
 
   def save(output, params = {})
-    type = params[:type]
+    content_type = params[:content_type]
     
-    case type
+    case content_type
     when 'text/ntriples'
-      writer = NTWriter.new
+      writer = NTriples::Writer.new
     when 'application/rdf+xml', 'text/xml', 'application/xml'
-      writer = XMLWriter.new
+      writer = XML::Writer.new
     else
-      raise RuntimeError.new("unsupported content-type: " + type.inspect)
+      raise RuntimeError.new("unsupported content-type: " + content_type.inspect)
     end
 
     if output.respond_to? :puts

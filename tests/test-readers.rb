@@ -26,10 +26,10 @@ class TestReaders < Test::Unit::TestCase
     model2 = Rena::MemModel.new
 
     model1.load(nt_fpath,
-                :type => 'text/ntriples',
+                :content_type => 'text/ntriples',
                 :base => uri1)
     model2.load(rdf_fpath,
-                :type => 'application/rdf+xml',
+                :content_type => 'application/rdf+xml',
                 :base => uri2)
 
     if model1.statements.size != model2.statements.size
@@ -47,7 +47,7 @@ class TestReaders < Test::Unit::TestCase
     s1 = model_to_hyperset(model1)
     s2 = model_to_hyperset(model2)
 
-    # model2.save(STDOUT, :type=>'text/ntriples') if s1!=s2
+    # model2.save(STDOUT, :content_type=>'text/ntriples') if s1!=s2
 
     assert_equal(s1, s2,
                  "#{nt_fpath} and #{rdf_fpath} are not equal as hyperset")
@@ -61,7 +61,7 @@ class TestReaders < Test::Unit::TestCase
 
     assert_raise(StandardError, RuntimeError){ # XXX
       model.load(rdf_fpath,
-                 :type => 'application/rdf+xml',
+                 :content_type => 'application/rdf+xml',
                  :base => base)
     }
   end
