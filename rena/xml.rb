@@ -55,7 +55,7 @@ class XMLReader
       # FIXME
       #raise ArgumentError
     else
-      if root.namespace == RDF::Namespace and root.name == "RDF"
+      if root.namespace == RDF::Namespace and root.name == 'RDF'
 	parse_rdf(root, base)
       else
 	parse_nodeElement(root, base) # XXX
@@ -70,7 +70,7 @@ class XMLReader
       
       # nodeElementList
       rdf.elements.each{|e|
-	parse_nodeElement(e, base)
+	parse_nodeElement(e, base, lang)
       }
     else
       # XXX
@@ -95,8 +95,8 @@ class XMLReader
     end
 
     unless e.namespace == RDF::Namespace and e.name == "Description"
-      subject.add_property(RDF::Type,
-			   @model.create_resource(URI.parse(e.namespace + e.name)))
+      uri = URI.parse(e.namespace(e.prefix) + e.name)
+      subject.add_property(RDF::Type, @model.create_resource(uri))
     end
 
     e.attributes.each_attribute{|attr|
@@ -117,7 +117,7 @@ class XMLReader
   end
 
   def parse_propertyEltList(subject, elements, base, lang)
-    i = 0
+    li_counter = 0
 
     elements.each{|e|
       # propertyElt
@@ -125,7 +125,7 @@ class XMLReader
       new_lang = update_lang(lang, e)
 
       if e.namespace==RDF::Namespace and e.name == "li"
-  	predicate = URI.parse(RDF::Namespace + "_#{i+=1}")
+  	predicate = URI.parse(RDF::Namespace + "_#{li_counter+=1}")
       else
   	predicate = URI.parse(e.namespace + e.name)
       end
@@ -167,18 +167,21 @@ class XMLReader
       else
 	# emptyPropertyElt
 
-	# If there are no attributes or only the optional rdf:ID attribute i.
+	# XXX: If there are no attributes or only the optional rdf:ID attribute i.
 	flag = true
 	e.attributes.each_attribute{|attr|
-	  if attr.prefix=='' and /^xml/ =~ attr.local_name
-	    next
-	  end
-	  if (ns = e.namespace(attr.prefix)) and
-	      ns == RDF::Namespace and attr.local_name == 'ID'
-	    next
-	  end
-	  flag = false
-	  break
+          if attr_as_predicate(e,attr)
+            flag = false
+            break
+          end
+
+          if (ns = e.namespace(attr.prefix)) and
+              ns == RDF::Namespace and attr.local_name == 'ID'
+            next
+          else
+            flag = false
+            break
+          end
 	}
 
 	if flag
@@ -210,7 +213,7 @@ class XMLReader
 	e.attributes.each_attribute{|attr|
 	  if predicate2 = attr_as_predicate(e, attr)
 	    subject2 = object
-	    # FIXMR
+	    # FIXME
 	    if predicate == RDF::Type
 	      object2 = @model.create_resource(URI.parse(attr.value))
 	    else
@@ -349,8 +352,9 @@ class XMLReader
   RDF_SyntaxNames = ['RDF', 'Description', 'ID', 'about', 'parseType', 'resource', 'li', 'nodeID', 'datatype']
 
   def attr_as_predicate(e, attr)
-    # FIXME
-    if attr.prefix=='' and attr.local_name=="xmlns"
+    if /^xml/i =~ attr.prefix
+      nil
+    elsif (attr.name==attr.expanded_name) and /^xml/i =~ local_name # XXX
       nil
     elsif (ns = e.namespace(attr.prefix)) and
 	(ns != RDF::Namespace or

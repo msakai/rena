@@ -50,45 +50,56 @@ class TestReaders < Test::Unit::TestCase
     Hyperset.solve(eqns)[root]
   end
 
-  def check_rdf(rdf_fpath, nt_fpath)
-    reader1 = Rena::XMLReader.new
-    reader2 = Rena::NTReader.new
+  def check_rdf(nt_fpath, rdf_fpath)
+    reader1 = Rena::NTReader.new
+    reader2 = Rena::XMLReader.new
 
     uri1 = URI.parse("http://www.w3.org/2000/10/rdf-tests/rdfcore/" +
-                       rdf_fpath.sub(/^.*approved_20031114\//, ''))
-    uri2 = URI.parse("http://www.w3.org/2000/10/rdf-tests/rdfcore/" +
                        nt_fpath.sub(/^.*approved_20031114\//, ''))
+    uri2 = URI.parse("http://www.w3.org/2000/10/rdf-tests/rdfcore/" +
+                       rdf_fpath.sub(/^.*approved_20031114\//, ''))
           
     reader1.model = Rena::MemModel.new
     reader2.model = Rena::MemModel.new
-    reader1.read(File.open(rdf_fpath), uri1)
-    reader2.read(File.open(nt_fpath), uri2)
 
-=begin
+    reader1.read(File.open(nt_fpath), uri1)
+    reader2.read(File.open(rdf_fpath), uri2)
+
+
+    if reader1.model.statements.size != reader2.model.statements.size
+      puts "--------------------------------"
+      reader1.model.statements.map{|s| p s.predicate }
+      puts "--------------------------------"
+      reader2.model.statements.map{|s| p s.predicate }
+      puts "--------------------------------"
+    end
+
     assert_equal(reader1.model.statements.size,
                  reader2.model.statements.size,
-                 "#{rdf_fpath} and #{nt_fpath} have differenet number of statements")
-=end
+                 "#{nt_fpath} and #{rdf_fpath} have different number of statements")
 
     s1 = model_to_hyperset(reader1.model)
     s2 = model_to_hyperset(reader2.model)
-    
+
     assert_equal(s1, s2,
-                 "#{rdf_fpath} and #{nt_fpath} are not equal as hyperset")
+                 "#{nt_fpath} and #{rdf_fpath} are not equal as hyperset")
   end
+
+  
 
   base = "approved_20031114"
   Dir.entries(base).each{|e|
+  #["rdf-containers-syntax-vs-schema"].each{|e|
     next if ["..", "."].member?(e)
     fname = File.join(base, e)
     next unless File.directory?(fname)
 
     Find.find(fname){|rdf_fpath|
-      if %r!(.*/(test[^/]*))\.rdf$! =~ rdf_fpath and
-          File.exist?(nt_fpath = $1 + ".nt")
-        tmp = $2
-        define_method(("test_" + e.gsub(/-/, "_") + "__" + tmp).intern){||
-          check_rdf(rdf_fpath, nt_fpath)
+      if m = %r!(.*/(test[^/]*))\.rdf$!.match(rdf_fpath) and
+          File.exist?(nt_fpath = m[1] + ".nt")
+        mname = "test_" + e.gsub(/-/, "_") + "__" + m[2]
+        define_method(mname.intern){||
+          check_rdf(nt_fpath, rdf_fpath)
         }
       end
     }

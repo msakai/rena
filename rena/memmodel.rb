@@ -7,7 +7,7 @@ module Rena
 class MemModel < Model
   def initialize
     @uri_to_resources = Hash.new
-    @blank_nodes = Set.new
+    @blank_nodes = Array.new
   end
 
   def each_resource(&block)
@@ -17,7 +17,9 @@ class MemModel < Model
 
   def create_resource_impl(uri)
     if uri.nil?
-      Resource.new(self)
+      res = Resource.new(self)
+      @blank_nodes << res
+      res
     else
       uri = URI.parse(uri) unless uri.is_a?(URI)
       @uri_to_resources[uri] ||= Resource.new(self, uri)
