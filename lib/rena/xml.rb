@@ -217,7 +217,7 @@ class XMLReader
   end
 
   def parse_literalPropertyElt(e, base, lang=nil)
-    s = e.children.map{|c| c.value }.join('')
+    s = e.children.select{|c| c.is_a?(REXML::Text) }.map{|c| c.value }.join('')
     if attr_type = e.attribute("datatype", RDF::Namespace)
       TypedLiteral.new(s, base + attr_type.value)
     else
@@ -293,6 +293,7 @@ class XMLReader
     end
   end
 
+=begin
   # Exclusive XML Canonicalization
   def exclusive_xml_canonicalization(e)
     # FIXME
@@ -318,9 +319,130 @@ class XMLReader
       s
     end
   end
+=end
+
+  def exclusive_xml_canonicalization(e)
+    require 'stringio'
+    io = StringIO.new
+    c14n = ExecC14N.new(io)
+    c14n.run(e)
+    io.string
+  end
+
 
   def lookup_nodeID(nodeID)
     @blank_nodes[nodeID] ||= @model.create_resource
+  end
+
+
+  class ExecC14N
+    def initialize(output)
+      @output = output
+    end
+
+    def run(e)
+      e.children.each{|child| do_c14n(child, {}) }
+    end
+
+    private
+
+    def do_c14n(node, ns_rendered)
+      case node
+      when REXML::Comment
+        @output.print('<!--', node.string, '-->')
+      when REXML::Text
+        @output.print(escape_text(node.value))
+      when REXML::Element
+        do_c14n_element(node, ns_rendered)
+      when REXML::Instruction
+        @output.print('<?', node.target)
+        unless node.content.empty?
+          @output.print(' ', node.content)
+        end
+        @output.print('?>')
+      end
+    end
+
+    def do_c14n_element(node, ns_rendered)
+      ns_table   = []
+      attr_table = []
+      new_ns_rendered = ns_rendered.dup
+
+      if node.prefix != '' and
+          node.namespace(node.prefix) != ns_rendered[node.prefix]
+        ns = node.namespace(node.prefix)
+        ns_table.push [node.prefix, ns]
+        new_ns_rendered[node.prefix] = ns
+      end
+
+      node.attributes.each{|attr|
+        unless "xmlns"==attr.prefix or "xmlns"==attr.expanded_name
+          next
+        end
+
+        if attr.prefix != '' and ns_rendered[attr.prefix] != attr.namespace
+          ns = node.namespace(attr.prefix)
+          ns_table.push [attr.prefix, ns]
+          new_ns_rendered[attr.prefix] = ns
+        end
+        attr_table.push attr
+      }
+      
+      @output.print('<', node.fully_expanded_name)
+      
+      if node.prefix=='' and
+          node.namespace!='' and ns_rendered['']!= node.namespace
+        @output.print(' ', 'xmlns', '=', '"',
+                      escape_attr_value(node.namespace),
+                      '"')
+        new_ns_rendered[''] = node.namespace
+      end
+      
+      ns_table = ns_table.sort_by{|(prefix,namespace)| prefix }
+      ns_table.each{|(prefix,namespace)|
+        @output.print(' ', 'xmlns:', prefix, '=', '"',
+                      escape_attr_value(namespace),
+                      '"')
+      }
+      
+      attr_table = attr_table.sort_by{|attr|
+        [attr.prefix.empty? ? '' : attr.namespace, attr.local_name]
+      }
+      attr_table.each{|attr|
+        @output.print(' ', attr.fully_expanded_name, '=', '"',
+                     escape_attr_value(attr.value),
+                     '"')
+      }
+      
+      @output.print '>'
+      
+      node.children.each{|child|
+        do_c14n(child, new_ns_rendered)
+      }
+      
+      @output.print('</', node.fully_expanded_name, '>')
+    end
+
+    def escape_text(s)
+      s = s.dup
+      s.gsub!(/&/,  '&amp;')
+      s.gsub!(/</,  '&lt;')
+      s.gsub!(/>/,  '&gt;')
+      s.gsub!(/\r/, '&#xD;')
+      s
+    end
+
+    def escape_attr_value(s)
+      s = s.dup
+      s.gsub!(/&/,  '&amp;')
+      s.gsub!(/</,  '&lt;')
+      s.gsub!(/>/,  '&gt;')
+      s.gsub!(/"/,  '&quot;')
+      s.gsub!(/\t/, '&#x9;')
+      s.gsub!(/\n/, '&#xA;')
+      s.gsub!(/\r/, '&#xD;')      
+      s
+    end
   end
 
 end # class XMLReader
