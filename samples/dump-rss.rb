@@ -11,8 +11,16 @@ RSS = Rena::RSS
 DC  = Rena::DC
 
 model = Rena::MemModel.new
-model.load("http://www.tom.sfc.keio.ac.jp/~sakai/rss/sfc-media-center.rdf")
-#model.load("http://web.sfc.keio.ac.jp/~s01397ms/d/t.rdf")
+
+if ARGV.empty?
+  ARGV.unshift "http://www.tom.sfc.keio.ac.jp/~sakai/rss/sfc-media-center.rdf"
+  ARGV.unshift "http://www.tom.sfc.keio.ac.jp/~sakai/rss/sfc-itc.rdf"
+  ARGV.unshift "http://www.sfc.keio.ac.jp/students_soukan/news/rss10.rss"
+end
+
+ARGV.each{|fname|
+  model.load(fname, :content_type => "application/rdf+xml")
+}
 
 channel = model.lookup_resource(RSS::Channel)
 
@@ -24,6 +32,7 @@ model.each_resource{|res|
 
   items.each_property{|prop, item|
     next unless %r!\Ahttp://www.w3.org/1999/02/22-rdf-syntax-ns#_(\d+)\Z! =~ prop.to_s
+    puts "--"
     puts item.get_property(RSS::Link)
     puts item.get_property(RSS::Title)
     puts item.get_property(DC::Date)
