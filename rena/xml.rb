@@ -145,9 +145,7 @@ class XMLReader
 	  }
 	#when "Literal" # parseTypeLiteralPropertyElt
 	else # parseTypeOtherPropertyElt
-	  # FIXME: Exclusive XML Canonicalization
-	  s = ''
-	  e.children.each{|child| child.write(s) }
+          s = exclusive_xml_canonicalization(e)
 	  object = TypedLiteral.new(s, XMLLiteral_DATATYPE_URI)
   	end
   
@@ -226,115 +224,43 @@ class XMLReader
     }
   end
 
-=begin
-  def parse_propertyEltList(subject, elements, base, lang)
-    i = 0
-
-    elements.each{|e|
-      # propertyElt
-
-      new_base = update_base(base, e)
-      new_lang = update_lang(lang, e)
-
-      if e.namespace==RDF::Namespace and e.name == "li"
-  	predicate = URI.parse(RDF::Namespace + "_#{i+=1}")
-      else
-  	predicate = URI.parse(e.namespace + e.name)
-      end
-  
-      if resource = e.attribute("resource", RDF::Namespace)
-	# resourcePropertyElt
-  	object = @model.create_resource(base + resource.value)
-      elsif nodeID = e.attribute("nodeID", RDF::Namespace)
-  	object = lookup_nodeID(nodeID.value)
-      elsif parseType = e.attribute("parseType", RDF::Namespace)
-  	case parseType.value
-  	when "Resource" # parseTypeResourcePropertyElt
-  	  object = @model.create_resource
-  	  parse_propertyEltList(object, e.elements, new_base, new_lang)
-  	when "Collection" # parseTypeCollectionPropertyElt
-	  items = e.elements.map{|e2| parse_nodeElement(e2, new_base) }
-	  object = items.reverse.inject(@model.create_resource(RDF::Nil)){|result,item|
-	    @model.create_resource.
-	      add_property(RDF::First, item).
-	      add_property(RDF::Rest, result)
-	  }
-	#when "Literal" # parseTypeLiteralPropertyElt
-	else # parseTypeOtherPropertyElt
-	  s = ''
-	  e.children.each{|child| child.write(s) }
-	  object = TypedLiteral.new(s, XMLLiteral_DATATYPE_URI)
-  	end
-      else
-	if e.elements.size == 1
-	  # resourcePropertyElt
-  	  object = parse_nodeElement(e.elements[1], new_base, new_lang)
-	elsif e.elements.size == 0
-	  # FIXME
-	  if e.children.any?{|child|
-	      child.is_a?(REXML::Text) and /\A\s*\Z/u !~ child.value
-	    }
-	    flag_blank = false
-	  else
-	    flag_blank = false
-	    e.attributes.each_attribute{|attr|
-	      if attr_as_predicate(e, attr)
-		flag_blank = true
-		break
-	      end
-	    }
-	  end
-
-	  if flag_blank
-	    object = @model.create_resource
-	  else
-	    # literalPropertyElt
-	    # emptyPropertyElt
-	    s = e.children.map{|child|
-	      child.is_a?(REXML::Text) ? child.value : ""
-	    }.join("")
-
-	    if attr_type = e.attribute("datatype", RDF::Namespace)
-	      object = TypedLiteral.new(s, new_base + attr_type.value)
-	    else
-	      object = PlainLiteral.new(s, new_lang)
-	    end
-	  end
-  	else
-  	  raise RuntimeError.new
-  	end
-      end
-
-      subject.add_property(predicate, object)
-
-      if id = e.attribute("ID", RDF::Namespace)
-	@model.create_resource(new_base + ("#" + id.value)).
-	  add_property(RDF::Type, @model.create_resource(RDF::Statement)).
-	  add_property(RDF::Subject, subject).
-	  add_property(RDF::Predicate, @model.create_resource(predicate)).
-	  add_property(RDF::Object, object)
-      end
-
-      #if object.is_a?(URI) or object.is_a?(BlankNode)
-      unless object.is_a?(Rena::Literal)
-	e.attributes.each_attribute{|attr|
-	  if predicate2 = attr_as_predicate(e, attr)
-	    subject2 = object
-	    # FIXMR
-	    if predicate == RDF::Type
-	      object2 = @model.create_resource(URI.parse(attr.value))
-	    else
-	      object2 = PlainLiteral.new(attr.value, new_lang)
-	    end
-	    subject2.add_property(predicate2, object2)
-	  end
-	}
-      end
-    }
+  def create_xpath(e)
+    parent = e.parent
+    if parent.nil?
+      ''
+    else
+      create_xpath(parent) + '/*[' + parent.elements.index(e).to_s + ']'
+    end
   end
-=end
+
+  # Exclusive XML Canonicalization
+  def exclusive_xml_canonicalization(e)
+    # FIXME
+    begin
+      require 'tempfile'
+
+      xmlfile   = Tempfile.new('rena-xml')
+      e.document.write(xmlfile)
+      xmlfile.close(false)
+
+      xpathfile = Tempfile.new('rena-xpath')
+      xpath = create_xpath(e) + '/descendant::node()'          
+      xpath = "(//@* | //namespace::* | " + xpath + ")"
+      xpathfile.puts("<XPath>", xpath, "</XPath>")
+      xpathfile.close(false)
+
+      s = `./testC14N --exc-with-comments #{xmlfile.path.sub(%!/cygdrive/c!,"c:")} #{xpathfile.path.sub(%!/cygdrive/c!,"c:")}`
+      s.gsub!(/\r\n/, "\n")
+      s
+    rescue
+      s = ''
+      e.children.each{|child| child.write(s) }
+      s
+    end
+  end
 
   private
+
   def lookup_nodeID(nodeID)
     @blank_nodes[nodeID] ||= @model.create_resource
   end
@@ -354,7 +280,7 @@ class XMLReader
   def attr_as_predicate(e, attr)
     if /^xml/i =~ attr.prefix
       nil
-    elsif (attr.name==attr.expanded_name) and /^xml/i =~ local_name # XXX
+    elsif (attr.name==attr.expanded_name) and /^xml/i =~ attr.local_name # XXX
       nil
     elsif (ns = e.namespace(attr.prefix)) and
 	(ns != RDF::Namespace or
