@@ -4,6 +4,8 @@
 # You can redistribute it and/or modify it under the same term as Ruby.
 #
 
+# racc -E -o rdql-parser.rb rdql-parser.ry
+
 # http://www.hpl.hp.com/semweb/rdql.htm#RDQL%20Grammar
 class Parser
 
@@ -14,7 +16,11 @@ compilation_unit : query EOF
 query
 	: select_clause source_clause_or_nil
           triple_pattern_clause constraint_clause_or_nil prefixes_clause_or_nil
-	  { result = [val[0], val[1], val[2], val[3]] }
+	  {
+            prefixes = Hash.new
+            val[4].each{|(key,value)| prefixes[key] = value }
+            result = Query.new(val[0], val[1], val[2], val[3], prefixes)
+          }
 
 # XXX
 source_clause_or_nil
@@ -23,12 +29,12 @@ source_clause_or_nil
 
 # XXX
 constraint_clause_or_nil
-	:
+	: { result = [] }
 	| constraint_clause
 
 # XXX
 prefixes_clause_or_nil
-	: 
+	: { result = [] }
 	| prefixes_clause
 
 select_clause
@@ -63,7 +69,7 @@ triple_patterns
 constraint_clause
 	#: SUCHTHAT expression ( ( "," | SUCHTHAT ) expression )*
 	: SUCHTHAT expression constraint_clause_tail
-	  { result = [val[1]] + val[2] }
+	  { result = val[2].unshift(val[1]) }
 
 # XXX
 constraint_clause_tail
@@ -103,17 +109,17 @@ expression
 
 conditional_or_expression
 	#: conditional_x_or_expression ( SC_OR conditional_x_or_expression )*
-	: conditional_x_or_expression { result = [val[0]] }
+	: conditional_x_or_expression { result = ConditionalOr.new(val[0]) }
 	| conditional_or_expression SC_OR conditional_x_or_expression
-	  { result.push val[1] } # FIXME
+	  { result.args.push val[2] } # FIXME
 
 conditional_x_or_expression : conditional_and_expression
 
 conditional_and_expression
 	#: value_logical ( SC_AND value_logical )*
-	: value_logical { result = [val[0]] }
+	: value_logical { result = ConditionalAnd.new(val[0]) }
 	| conditional_and_expression SC_AND value_logical
-	  { result.push val[1] } # FIXME
+	  { result.args.push val[2] } # FIXME
 
 value_logical : string_equality_expression
 
@@ -121,29 +127,29 @@ string_equality_expression
 	#: numerical_logical ( STR_EQ numerical_logical | STR_NE numerical_logical )*
 	: numerical_logical
 	| string_equality_expression STR_EQ numerical_logical
-	  { result = [:eq, val[0], val[2]] }
+	  { result = StringEqual.new(val[0], val[2]) }
 	| string_equality_expression STR_NE numerical_logical
-	  { result = [:ne, val[0], val[2]] }
+	  { result = StringNotEqual.new(val[0], val[2]) }
 
 numerical_logical : inclusive_or_expression
 
 inclusive_or_expression
 	#: exclusive_or_expression ( BIT_OR exclusive_or_expression )*
-	: exclusive_or_expression { result = [val[0]] }
+	: exclusive_or_expression { result = BitOR.new(val[0]) }
 	| inclusive_or_expression BIT_OR exclusive_or_expression
-	  { result.push val[1] } # FIXME
+	  { result.args.push val[2] }
 
 exclusive_or_expression
 	#: 	and_expression ( BIT_XOR and_expression )*
-	: and_expression { result = [val[0]] }
+	: and_expression { result = BitXOR.new(val[0]) }
 	| exclusive_or_expression BIT_XOR and_expression
-	  { result.push val[1] } # FIXME
+	  { result.args.push val[2] }
 
 and_expression
 	#: 	arithmetic_condition ( BIT_AND arithmetic_condition )*
-	: arithmetic_condition  { result = [val[0]] }
+	: arithmetic_condition  { result = BitAND.new(val[0]) }
 	| and_expression BIT_AND arithmetic_condition
-	  { result.push val[1] } # FIXME
+	  { result.args.push val[2] }
 
 arithmetic_condition
 	: 	equality_expression
@@ -152,21 +158,21 @@ equality_expression
 	#: 	relational_expression ( EQ relational_expression | NEQ relational_expression )?
 	: relational_expression
 	| relational_expression EQ relational_expression
-	  { result = [:eq, val[0], val[2]] }
+	  { result = Eq.new(val[0], val[2]) }
 	| relational_expression NEQ relational_expression
-	  { result = [:eeq, val[0], val[2]] }
+	  { result = NEq.new(val[0], val[2]) }
 
 relational_expression
 	#: 	numeric_expression ( LT numeric_expression | GT numeric_expression | LE numeric_expression | GE numeric_expression )?
 	: numeric_expression
 	| numeric_expression LT numeric_expression
-	  { result = [:<, val[0], val[2]] }
+	  { result = BinaryRel.new(:<, val[0], val[2]) }
 	| numeric_expression GT numeric_expression
-	  { result = [:>, val[0], val[2]] }
+	  { result = BinaryRel.new(:>, val[0], val[2]) }
 	| numeric_expression LE numeric_expression
-	  { result = [:<=, val[0], val[2]] }
+	  { result = BinaryRel.new(:<=, val[0], val[2]) }
 	| numeric_expression GE numeric_expression
-	  { result = [:>=, val[0], val[2]] }
+	  { result = BinaryRel.new(:>=, val[0], val[2]) }
 
 numeric_expression
 	: 	shift_expression
@@ -175,42 +181,42 @@ shift_expression
 	#: 	additive_expression ( LSHIFT additive_expression | RSIGNEDSHIFT additive_expression | RUNSIGNEDSHIFT additive_expression )*
 	: additive_expression
 	| additive_expression LSHIFT additive_expression
-	  { result = [:<<, val[0], val[2]] }
+	  { result = BinaryOP.new(:<<, val[0], val[2]) }
 	| additive_expression RSIGNEDSHIFT additive_expression
-	  { result = [:>>, val[0], val[2]] }
+	  { result = BinaryOp.new(:>>, val[0], val[2]) }
 	| additive_expression RUNSIGNEDSHIFT additive_expression
-	  { result = [:">>>", val[0], val[2]] }
+	  { result = BinaryOp.new(:">>>", val[0], val[2]) }
 
 additive_expression
 	#: 	multiplicative_expression ( PLUS multiplicative_expression | MINUS multiplicative_expression )*
 	: multiplicative_expression
 	| additive_expression PLUS multiplicative_expression
-	  { result = [:+, val[0], val[2]] }
+	  { result = BinaryOp.new(:+, val[0], val[2]) }
 	| additive_expression MINUS multiplicative_expression
-	  { result = [:-, val[0], val[2]] }
+	  { result = BinaryOp.new(:-, val[0], val[2]) }
 
 multiplicative_expression
 	#: 	unary_expression ( STAR unary_expression | SLASH unary_expression | REM unary_expression )*
 	: unary_expression
 	| multiplicative_expression STAR unary_expression
-	  { result = [:*, val[0], val[2]] }
+	  { result = BinaryOp.new(:*, val[0], val[2]) }
 	| multiplicative_expression REM unary_expression
-	  { result = [:%, val[0], val[2]] }
+	  { result = BinaryOp.new(:%, val[0], val[2]) }
 
 unary_expression
 	: 	unary_expression_not_plus_minus
 	#| 	( PLUS unary_expression | MINUS unary_expression )
 	| PLUS unary_expression
-	  { result = [:+, val[0]] }
+	  { result = UnaryOp.new(:+, val[1]) }
 	| MINUS unary_expression
-	  { result = [:-, val[0]] }
+	  { result = UnaryOp.new(:-, val[1]) }
 
 unary_expression_not_plus_minus
 	#: 	( TILDE | BANG ) unary_expression
 	: 	TILDE unary_expression
-	  { result = [:~, val[0]] }
+	  { result = UnaryOp.new(:~, val[1]) }
 	|	BANG unary_expression
-	  { result = [:"!", val[0]] }
+	  { result = UnaryOp.new(:"!", val[1]) }
 	| 	primary_expression
 
 primary_expression
@@ -218,6 +224,7 @@ primary_expression
 	| 	literal
 	| 	function_call
 	| 	LPAREN expression RPAREN
+	  { result = val[1] }
 
 function_call
 	: 	identifier LPAREN arg_list RPAREN
@@ -241,7 +248,7 @@ text_literal	: 	STRING_LITERAL
 boolean_literal	: 	BOOLEAN_LITERAL
 null_literal	: 	NULL_LITERAL
 url		: 	uri
-uri		: 	URI # "<" URI ">"
+uri		: 	LT URI GT # "<" URI ">"
 identifier	:	IDENTIFIER
 
 end
@@ -276,7 +283,7 @@ def scan
         yield(:LPAREN, nil)
       when /\A\)/
         yield(:RPAREN, nil)
-      when /\A<([^<> ,]+)>/ # XXX
+      when /\A([^<> ,]+)/ # XXX
         # #{URI::REGEXP::PATTERN::ABS_URI}(?:##{URI::REGEXP::PATTERN::FRAGMENT}?)
         yield(:URI, $1)
       when /\A([,\?])/
@@ -292,26 +299,35 @@ def scan
       when /\A&&/i
         yield(:SC_AND, nil)
 
-      # STR_EQ
-      # STR_NE
-
-      # BIT_OR
-      # BIT_XOR
-      # BIT_AND
-
-      when /\Aeq/ # ?
+      when /\Aeq/
         yield(:STR_EQ, nil)
-      when /\A<=/ # 衝突してる
+      when /\Ane/
+        yield(:STR_NE, nil)
+
+      when /\A&/
+        yield(:BIT_AND, nil)
+      when /\A\|/
+        yield(:BIT_OR, nil)
+      when /\A\^/
+        yield(:BIT_XOR, nil)
+
+      when /\A%/
+        yield(:REM, nil)
+      when /\A<</
+        yield(:LSHIFT, nil)
+      when /\A>>/
+        yield(:RSIGNEDSHIFT, nil)
+      when /\A>>>/
+        yield(:RUNSHIGNEDSHIFT, nil)
+
+      when /\A<=/
         yield(:LE, nil)
-      when /\A>=/ # 衝突してる
+      when /\A>=/
         yield(:GE, nil)
-      when /\A</  # 衝突してる
+      when /\A</
         yield(:LT, nil)
-      when /\A>/  # 衝突してる
+      when /\A>/
         yield(:GT, nil)
-
-
-      # LSHIFT, RSIGNEDSHIFT, RUNSHIGNEDSHIFT
 
       when /\A\+/
         yield(:PLUS, nil)
@@ -321,8 +337,6 @@ def scan
         yield(:STAR, nil)
       when /\A\//
         yield(:SLASH, nil)
-      when /\A%/
-        yield(:REM, nil)
       when /\A~/
         yield(:TILDE, nil)
       when /\A!/
@@ -358,40 +372,3 @@ end
 
 end # module RDQL
 end # module Rena
-
-if __FILE__ == $0
-
-# Query example 1: Retrieve the value of a known property of a known resource
-parser = Rena::RDQL::Parser.new
-p parser.parse <<END
-SELECT ?x
-WHERE  (<http://somewhere/res1>, <http://somewhere/pred1>, ?x)
-END
-
-# Query example 2: constraints
-parser = Rena::RDQL::Parser.new
-p parser.parse <<END
-SELECT ?a, ?b
-WHERE  (?a, <http://somewhere/pred1>, ?b)
-AND    ?b < 5
-END
-
-# Query example 3: paths in the graph
-parser = Rena::RDQL::Parser.new
-p parser.parse <<END
-SELECT ?a, ?b
-WHERE (?a, <http://somewhere/pred1>, ?c) ,
-      (?c, <http://somewhere/pred2>, ?b)
-END
-
-# Query example 3: paths in the graph
-parser = Rena::RDQL::Parser.new
-p parser.parse <<END
-SELECT ?x, ?y
-WHERE (<http://never/bag>, ?x, ?y)
-AND ! ( ?x eq <rsyn:type> && ?y eq <rsyn:Bag>)
-USING
-rsyn FOR <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-END
-  
-end
