@@ -139,31 +139,53 @@ end # class Statement
 class Model
 
   def load(input, params = {})
-    case params[:type]
-    when 'text/ntriples'
-      reader = NTReader.new
-    #when 'application/rdf+xml', 'text/xml', 'application/xml'
-    else
-      reader = XMLReader.new
-    end
-    reader.model = self
-
     if input.respond_to? :gets
+      reader = setup_reader(input, params)
       reader.read(input, params)
     else
-      open(input, 'rb'){|f| reader.read(f, params) }
+      open(input, 'rb'){|f|
+        reader = setup_reader(f, params)
+        reader.read(f, params)
+      }
     end
 
     nil
   end
 
+  private
+
+  def setup_reader(io, params)
+    type = params[:type]
+    # for open-uri
+    if type.nil? and io.respond_to? :content_type
+      type ||= io.content_type
+    end
+
+    case type
+    when 'text/ntriples'
+      reader = NTReader.new
+    when 'application/rdf+xml', 'text/xml', 'application/xml'
+      reader = XMLReader.new
+    else
+      raise RuntimeError.new("unsupported content-type: " + type.inspect)
+    end
+    reader.model = self
+
+    reader
+  end
+
+  public
+
   def save(output, params = {})
-    case params[:type]
+    type = params[:type]
+    
+    case type
     when 'text/ntriples'
       writer = NTWriter.new
-    #when 'application/rdf+xml', 'text/xml', 'application/xml'
-    else
+    when 'application/rdf+xml', 'text/xml', 'application/xml'
       writer = XMLWriter.new
+    else
+      raise RuntimeError.new("unsupported content-type: " + type.inspect)
     end
 
     if output.respond_to? :puts

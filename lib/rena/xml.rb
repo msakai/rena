@@ -19,8 +19,13 @@ class XMLReader
   attr_accessor :model
 
   def read(io, params)
-    doc = REXML::Document.new(io)
-    read_from_xml_document(doc, params[:base])
+    base = params[:base]
+    if base.nil? and io.respond_to?(:base_uri) # for open-uri
+      base ||= io.base_uri
+    end
+
+    doc = REXML::Document.new(REXML::IOSource.new(io)) # XXX
+    read_from_xml_document(doc, base)
     nil
   end
 
