@@ -67,15 +67,17 @@ class XMLReader
     if rdf.namespace == RDF::Namespace and rdf.name == "RDF"
       base = update_base(base, rdf)
       lang = update_lang(lang, rdf)
-      
-      # nodeElementList
-      rdf.elements.each{|e|
-	parse_nodeElement(e, base, lang)
-      }
+      parse_nodeElementList(rdf.elements, base, lang)
     else
       # XXX
       raise TypeError.new
     end
+  end
+
+  def parse_nodeElementList(elements, base, lang)
+    elements.each{|e|
+      parse_nodeElement(e, base, lang)
+    }
   end
 
   def parse_nodeElement(e, base, lang = nil)
@@ -100,7 +102,7 @@ class XMLReader
     end
 
     e.attributes.each_attribute{|attr|
-      if predicate = attr_as_predicate(e, attr)
+      if predicate = parse_propertyAttr(e, attr)
 	if predicate == RDF::Type
 	  subject.add_property(predicate,
 			       @model.create_resource(URI.parse(attr.value)))
@@ -125,6 +127,7 @@ class XMLReader
       new_lang = update_lang(lang, e)
 
       if e.namespace==RDF::Namespace and e.name == "li"
+        # List Expansion Rules
   	predicate = URI.parse(RDF::Namespace + "_#{li_counter+=1}")
       else
   	predicate = URI.parse(e.namespace + e.name)
@@ -132,68 +135,21 @@ class XMLReader
 
       if parseType = e.attribute("parseType", RDF::Namespace)
   	case parseType.value
-  	when "Resource" # parseTypeResourcePropertyElt
-  	  object = @model.create_resource
-  	  parse_propertyEltList(object, e.elements, new_base, new_lang)
-  	when "Collection" # parseTypeCollectionPropertyElt
-	  items = e.elements.map{|e2| parse_nodeElement(e2, new_base) }
-	  object = items.reverse.inject(@model.create_resource(RDF::Nil)){
-	    |result, item|
-	    @model.create_resource.
-	      add_property(RDF::First, item).
-	      add_property(RDF::Rest, result)
-	  }
-	#when "Literal" # parseTypeLiteralPropertyElt
-	else # parseTypeOtherPropertyElt
-          s = exclusive_xml_canonicalization(e)
-	  object = TypedLiteral.new(s, XMLLiteral_DATATYPE_URI)
+  	when "Resource"
+  	  object = parse_parseTypeResourcePropertyElt(e, new_base, new_lang)
+  	when "Collection"
+          object = parse_parseTypeCollectionPropertyElt(e, new_base, new_lang)
+        when "Literal"
+          object = parse_parseTypeLiteralPropertyElt(e, new_base, new_lang)
+	else
+          object = parse_parseTypeOtherPropertyElt(e, new_base, new_lang)
   	end
-  
       elsif e.elements.size == 1
-	# resourcePropertyElt
-	object = parse_nodeElement(e.elements[1], new_base, new_lang)
-
+        object = parse_resourcePropertyElt(e, new_base, new_lang)
       elsif e.children.any?{|c| c.is_a? REXML::Text }
-	# literalPropertyElt
-	s = e.children.map{|c| c.value }.join('')
-	if attr_type = e.attribute("datatype", RDF::Namespace)
-	  object = TypedLiteral.new(s, new_base + attr_type.value)
-	else
-	  object = PlainLiteral.new(s, new_lang)
-	end
-
+	object = parse_literalPropertyElt(e, new_base, new_lang)
       else
-	# emptyPropertyElt
-
-	# XXX: If there are no attributes or only the optional rdf:ID attribute i.
-	flag = true
-	e.attributes.each_attribute{|attr|
-          if attr_as_predicate(e,attr)
-            flag = false
-            break
-          end
-
-          if (ns = e.namespace(attr.prefix)) and
-              ns == RDF::Namespace and attr.local_name == 'ID'
-            next
-          else
-            flag = false
-            break
-          end
-	}
-
-	if flag
-	  object = PlainLiteral.new('', new_lang)
-	else
-	  if resource = e.attribute("resource", RDF::Namespace)
-	    object = @model.create_resource(base + resource.value)
-	  elsif nodeID = e.attribute("nodeID", RDF::Namespace)
-	    object = lookup_nodeID(nodeID.value)	
-	  else
-	    object = @model.create_resource
-	  end
-	end
-
+        object = parse_emptyPropertyElt(e, new_base, new_lang)
       end
 
       subject.add_property(predicate, object)
@@ -209,7 +165,7 @@ class XMLReader
       # XXX
       unless object.is_a?(Rena::Literal)
 	e.attributes.each_attribute{|attr|
-	  if predicate2 = attr_as_predicate(e, attr)
+	  if predicate2 = parse_propertyAttr(e, attr)
 	    subject2 = object
 	    # FIXME
 	    if predicate == RDF::Type
@@ -223,6 +179,103 @@ class XMLReader
       end
     }
   end
+
+  def parse_parseTypeResourcePropertyElt(e, base, lang=nil)
+    object = @model.create_resource
+    parse_propertyEltList(object, e.elements, base, lang)
+    object
+  end
+
+  def parse_parseTypeCollectionPropertyElt(e, base, lang=nil)
+    items = e.elements.map{|e2| parse_nodeElement(e2, base, lang) }
+    items.reverse.inject(@model.create_resource(RDF::Nil)){
+      |result, item|
+      @model.create_resource.
+        add_property(RDF::First, item).
+        add_property(RDF::Rest, result)
+    }
+  end
+
+  def parse_parseTypeLiteralPropertyElt(e, base, lang=nil)
+    s = exclusive_xml_canonicalization(e)
+    TypedLiteral.new(s, XMLLiteral_DATATYPE_URI)
+  end
+
+  def parse_parseTypeOtherPropertyElt(e, base, lang=nil)
+    parse_parseTypeLiteralPropertyElt(e, base, lang)
+  end
+
+  def parse_resourcePropertyElt(e, base, lang=nil)
+    parse_nodeElement(e.elements[1], base, lang)
+  end
+
+  def parse_literalPropertyElt(e, base, lang=nil)
+    s = e.children.map{|c| c.value }.join('')
+    if attr_type = e.attribute("datatype", RDF::Namespace)
+      TypedLiteral.new(s, base + attr_type.value)
+    else
+      PlainLiteral.new(s, lang)
+    end
+  end
+
+  def parse_emptyPropertyElt(e, base, lang=nil)
+    # XXX: If there are no attributes or only the optional rdf:ID attribute i.
+    flag = true
+    e.attributes.each_attribute{|attr|
+      if parse_propertyAttr(e,attr)
+        flag = false
+        break
+      end
+
+      if (ns = e.namespace(attr.prefix)) and
+          ns == RDF::Namespace and attr.local_name == 'ID'
+        next
+      else
+        flag = false
+        break
+      end
+    }
+
+    if flag
+      PlainLiteral.new('', lang)
+    else
+      if resource = e.attribute("resource", RDF::Namespace)
+        @model.create_resource(base + resource.value)
+      elsif nodeID = e.attribute("nodeID", RDF::Namespace)
+        lookup_nodeID(nodeID.value)	
+      else
+        @model.create_resource
+      end
+    end
+  end
+
+=begin
+  CoreSyntaxTerms_local_name = [
+    "RDF", "ID", "about", "parseType", "resource", "nodeID", "datatype"
+  ]
+  SyntaxTerms_local_name = CoreSyntaxTerms_local_name + [
+    "Description", "li"
+  ]
+  OldTerms_local_name = ["aboutEach", "aboutEachPrefix", "bagID"]
+=end
+
+  RDF_SyntaxNames = ['RDF', 'Description', 'ID', 'about', 'parseType', 'resource', 'li', 'nodeID', 'datatype']
+
+  def parse_propertyAttr(e, attr)
+    if /^xml/i =~ attr.prefix
+      nil
+    elsif (attr.name==attr.expanded_name) and /^xml/i =~ attr.local_name # XXX
+      nil
+    elsif (ns = e.namespace(attr.prefix)) and
+	(ns != RDF::Namespace or
+	 not RDF_SyntaxNames.member?(attr.local_name))
+      URI.parse(ns + attr.local_name)
+    else
+      nil
+    end
+  end
+
+  private
 
   def create_xpath(e)
     parent = e.parent
@@ -259,36 +312,8 @@ class XMLReader
     end
   end
 
-  private
-
   def lookup_nodeID(nodeID)
     @blank_nodes[nodeID] ||= @model.create_resource
-  end
-
-=begin
-  CoreSyntaxTerms_local_name = [
-    "RDF", "ID", "about", "parseType", "resource", "nodeID", "datatype"
-  ]
-  SyntaxTerms_local_name = CoreSyntaxTerms_local_name + [
-    "Description", "li"
-  ]
-  OldTerms_local_name = ["aboutEach", "aboutEachPrefix", "bagID"]
-=end
-
-  RDF_SyntaxNames = ['RDF', 'Description', 'ID', 'about', 'parseType', 'resource', 'li', 'nodeID', 'datatype']
-
-  def attr_as_predicate(e, attr)
-    if /^xml/i =~ attr.prefix
-      nil
-    elsif (attr.name==attr.expanded_name) and /^xml/i =~ attr.local_name # XXX
-      nil
-    elsif (ns = e.namespace(attr.prefix)) and
-	(ns != RDF::Namespace or
-	 not RDF_SyntaxNames.member?(attr.local_name))
-      URI.parse(ns + attr.local_name)
-    else
-      nil
-    end
   end
 
 end # class XMLReader
