@@ -29,6 +29,10 @@ class Literal
 
   public
 
+  def string
+    @str
+  end
+
   def to_s
     @str
   end
