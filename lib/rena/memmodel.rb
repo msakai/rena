@@ -20,6 +20,8 @@ class MemModel < Model
     @blank_nodes.each(&block)
   end
 
+  private
+
   def create_resource_impl(uri)
     if uri.nil?
       res = Resource.new(self)
@@ -34,6 +36,8 @@ class MemModel < Model
   def lookup_resource_impl(uri)
     @uri_to_resources[uri]
   end
+
+  public
 
   def each_statement(&block)
     each_resource{|subject|
@@ -54,12 +58,13 @@ class MemModel < Model
     private
 
     def add_property_impl(prop, object)
-      prop = URI.parse(prop) unless prop.is_a?(URI)
-      unless object.is_a?(Resource) or object.is_a?(Literal)
-	raise ArgumentError.new(object.inspect + " is not Rena::Resource nor Rena::Literal")
-      end
       (@properties[prop] ||= Set[]) << object
-      self
+    end
+
+    def remove_property_impl(prop, object)
+      if s = @properties[prop]
+        s.delete(object)
+      end
     end
 
     public

@@ -12,11 +12,33 @@ class Resource
     @model = model
     @uri = uri
   end
+
   attr_reader :model
+
+  # URI Reference of the resource, or nil for blank node.
   attr_reader :uri
 
   def add_property(prop, object)
+    prop = URI.parse(prop) unless prop.is_a?(URI)
+    unless object.is_a?(Resource) or object.is_a?(Literal)
+      raise ArgumentError.new(object.inspect + " is not Rena::Resource nor Rena::Literal")
+    end
     add_property_impl(prop, object)
+    self
+  end
+
+  def remove_property(prop, object = nil)
+    prop = URI.parse(prop) unless prop.is_a?(URI)
+    if object.nil?
+      each_property{|p,object|
+        remove_property_impl(p, object) if p==prop
+      }
+    else
+      unless object.is_a?(Resource) or object.is_a?(Literal)
+        raise ArgumentError.new(object.inspect + " is not Rena::Resource nor Rena::Literal")
+      end
+      remove_property_impl(prop, object)
+    end
   end
 
   private
@@ -25,10 +47,23 @@ class Resource
     raise RuntimeError.new("implement this method")
   end
 
+  def remove_property_impl(prop, object)
+    raise RuntimeError.new("implement this method")
+  end
+
   public
 
+  # call-seq:
+  #    rc.have_property(prop,obj)  => true or false
+  #
+  # Returns <code>true</code> if <i>rc</i> has an property <i>prop</i>,
+  # <code>false</code> otherwise.
+  # 
   def have_property?(prop, obj)
     prop = URI.parse(prop) unless prop.is_a?(URI)
+    unless obj.is_a?(Resource) or obj.is_a?(Literal)
+      raise ArgumentError.new(obj.inspect + " is not Rena::Resource nor Rena::Literal")
+    end
 
     each_property{|predicate, object|
       return true if predicate == prop and object == obj
@@ -36,6 +71,12 @@ class Resource
     false
   end
 
+  # call-seq:
+  #    rc.get_property(prop)  => node or nil
+  #
+  # Returns Rena::Resource or Rena::Literal if rc has an property <i>prop</i>,
+  # <code>nil</code> otherwise.
+  # 
   def get_property(prop)
     prop = URI.parse(prop) unless prop.is_a?(URI)
 
@@ -67,7 +108,7 @@ class Resource
     result
   end
 
-  def each_property
+  def each_property # :yield: predicate, object
     raise RuntimeError.new("implement this method")
   end
 end
@@ -102,6 +143,11 @@ class SaveError < Error; end
 
 class Model
 
+  # Load data from +input+.
+  #
+  # +input+ is a filename String or IO object.
+  # +params+ is a hash of parameters.
+  #
   def load(input, params = {})
     if input.respond_to? :gets
       reader = setup_reader(input, params)
@@ -126,7 +172,8 @@ class Model
     end
 
     case content_type
-    when /\Atext\/ntriples\Z/i
+    #when application/n3
+    when /\/n-?triples\Z/i
       reader = NTriples::Reader.new
     #when /application\/trix(\+xml)?/i # http://www.kanzaki.com/memo/2004/02/29-1
     #when /application\/turtle/i # http://www.kanzaki.com/memo/2004/03/27-1
@@ -166,7 +213,7 @@ class Model
     end
 
     case content_type
-    when /\Atext\/ntriples\Z/i
+    when /\/n-?triples\Z/i
       writer = NTriples::Writer.new
     when /\Aapplication\/rdf\+xml\Z/i, /\Atext\/xml\Z/i, /\Aapplication\/xml\Z/i
       writer = XML::Writer.new
@@ -185,9 +232,13 @@ class Model
     result
   end
 
+  private
+
   def create_resource_impl
     raise RuntimeError.new("implement this method")
   end
+
+  public
 
   def create_resource(uri = nil, type = nil)
     uri = URI.parse(uri) if uri and not uri.is_a?(URI)
@@ -207,27 +258,33 @@ class Model
     lookup_resource_impl(uri)
   end
 
+  private
+
   def lookup_resource_impl(uri)
     raise RuntimeError.new("implement this method")
   end
+
+  public
 
   def [](uri)
     lookup_resource(uri)
   end
 
-  def each_resource
+  def each_resource # :yield: resource
     raise RuntimeError.new("implement this method")
   end
 
-  def each_statement(&block)
+  def each_statement(&block) # :yield: statement
     raise RuntimeError.new("implement this method")
   end
 
-  def merge!(model, h = nil)
-    if h.nil?
-      h = Hash.new
+  # Merge _model_.
+  # optional _map_ is used to identity blank nodes.
+  def merge!(model, map = nil)
+    if map.nil?
+      map = Hash.new
     else
-      h = h.dup
+      map = map.dup
     end
 
     f = lambda{|x|
@@ -236,7 +293,7 @@ class Model
       elsif x.uri
         create_resource(x.uri)
       else
-        h[x] ||= create_resource
+        map[x] ||= create_resource
       end
     }
 
