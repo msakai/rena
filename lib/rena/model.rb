@@ -177,7 +177,7 @@ class Model
       reader = NTriples::Reader.new
     #when /application\/trix(\+xml)?/i # http://www.kanzaki.com/memo/2004/02/29-1
     #when /application\/turtle/i # http://www.kanzaki.com/memo/2004/03/27-1
-    when /\Aapplication\/rdf\+xml\Z/i, /\Atext\/xml\Z/i, /\Aapplication\/xml\Z/i
+    when /\Aapplication\/.+\+xml\Z/i, /\Atext\/xml\Z/i, /\Aapplication\/xml\Z/i
       reader = XML::Reader.new
     else
       raise RuntimeError.new("unsupported content-type: " + content_type.inspect)
