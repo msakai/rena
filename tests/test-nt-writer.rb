@@ -19,19 +19,15 @@ class TestNTWriter < Test::Unit::TestCase
                       rdf_fpath.sub(/^.*approved_20031114\//, ''))    
 
     model1 = Rena::MemModel.new
-    model2 = Rena::MemModel.new
-
-    reader1 = Rena::NTReader.new
-    reader1.model = model1
-    reader1.read(File.open(rdf_fpath), uri)
+    model1.load(rdf_fpath, :type => 'text/ntriples', :base => uri)
 
     tmpfile = Tempfile.new('rena-test-nt-writer')
     writer = Rena::NTWriter.new
     tmpfile.write(writer.model2nt(model1))
     tmpfile.close(false)
-    reader2 = Rena::NTReader.new
-    reader2.model = model2
-    reader2.read(tmpfile.open)
+
+    model2 = Rena::MemModel.new
+    model2.load(tmpfile.path, :type => 'text/ntriples', :base => uri)
 
     if model1.statements.size != model2.statements.size
       puts "--------------------------------"

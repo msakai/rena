@@ -24,12 +24,13 @@ class TestReaders < Test::Unit::TestCase
 
     model1 = Rena::MemModel.new
     model2 = Rena::MemModel.new
-          
-    reader1.model = model1
-    reader2.model = model2
 
-    reader1.read(File.open(nt_fpath), uri1)
-    reader2.read(File.open(rdf_fpath), uri2)
+    model1.load(nt_fpath,
+                :type => 'text/ntriples',
+                :base => uri1)
+    model2.load(rdf_fpath,
+                :type => 'application/rdf+xml',
+                :base => uri2)
 
     if model1.statements.size != model2.statements.size
       puts "--------------------------------"

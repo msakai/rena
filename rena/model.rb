@@ -132,6 +132,38 @@ end # class Statement
 
 
 class Model
+
+  def load(filename, params)
+    case params[:type]
+    when 'text/ntriples'
+      reader = NTReader.new
+    #when 'application/rdf+xml', 'text/xml', 'application/xml'
+    else
+      reader = XMLReader.new
+    end
+    reader.model = self
+    open(filename, 'rb'){|f|
+      reader.read(f, params)
+    }
+    nil
+  end
+
+=begin
+  def save(filename, params)
+    case params[:type]
+    when 'text/ntriples'
+      writer = NTWriter.new
+    #when 'application/rdf+xml', 'text/xml', 'application/xml'
+    else
+      writer = XMLWriter.new
+    end
+    open(filename, 'wb'){|f|
+      writer.write(f, self, params)
+    }
+    nil
+  end
+=end
+
   def statements
     result = []
     each_statement{|s| result << s }

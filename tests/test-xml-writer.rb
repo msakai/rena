@@ -9,6 +9,7 @@ require 'hyperset'
 require 'test/unit'
 require 'find'
 require 'pp'
+require 'tempfile'
 
 class TestXMLWriter < Test::Unit::TestCase
   include RenaTestUtils
@@ -18,18 +19,15 @@ class TestXMLWriter < Test::Unit::TestCase
                       rdf_fpath.sub(/^.*approved_20031114\//, ''))    
 
     model1 = Rena::MemModel.new
-    model2 = Rena::MemModel.new
+    model1.load(rdf_fpath, :type => 'application/rdf+xml', :base => uri)
 
-    reader1 = Rena::XMLReader.new
-    reader1.model = model1
-    reader1.read(File.open(rdf_fpath), uri)
-
+    tmpfile = Tempfile.new('rena-test-nt-writer')
     writer = Rena::XMLWriter.new
-    doc = writer.model2rdfxml(model1)
+    tmpfile.write(writer.model2rdfxml(model1))
+    tmpfile.close(false)
 
-    reader2 = Rena::XMLReader.new
-    reader2.model = model2
-    reader2.read_from_xml_document(doc, uri)
+    model2 = Rena::MemModel.new
+    model2.load(tmpfile.path, :type => 'application/rdf+xml', :base => uri)
 
     if model1.statements.size != model2.statements.size
       puts "--------------------------------"

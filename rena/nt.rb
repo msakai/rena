@@ -10,8 +10,8 @@ class NTReader
   end
   attr_accessor :model
 
-  def read(txt, base = URI.parse(""))
-    txt.each{|line|
+  def read(io, params)
+    io.each{|line|
       next if /\A\s*#/ =~ line
       next if /\A\s*\Z/ =~ line
 
@@ -84,6 +84,10 @@ end
 
 
 class NTWriter
+
+  def write(io, m, params)
+    self.class.write_model(m, io)
+  end
 
   def model2nt(m)
     require 'stringio'

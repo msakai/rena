@@ -1,4 +1,5 @@
-
+require 'rena'
+require 'hyperset'
 
 module RenaTestUtils
   def model_to_hyperset(model)

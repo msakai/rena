@@ -1,15 +1,20 @@
 require 'rena'
-require 'rexml/document'
 require 'pp'
 $KCODE='utf-8'
 
 ARGV.each{|fname|
+  model = Rena::MemModel.new
+
+  base = URI.parse("http://www.tom.sfc.keio.ac.jp/~sakai/rss/sfc-media-center.rdf")
   if /.nt$/ =~ fname
-    reader = Rena::NTReader.new
+    model.load(fname,
+               :type => 'text/ntriples',
+               :base => base)
   else
-    reader = Rena::XMLReader.new
+    model.load(fname,
+               :type => 'application/rdf+xml',
+               :base => base)
   end
-  reader.read(File.open(fname),
-	      URI.parse("http://www.tom.sfc.keio.ac.jp/~sakai/rss/sfc-media-center.rdf"))
-  pp reader.model
+
+  pp model
 }

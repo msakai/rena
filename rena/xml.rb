@@ -11,13 +11,18 @@ class XMLReader
   end
   attr_accessor :model
 
-  def read(input, base = URI.parse(""))
-    doc = REXML::Document.new(input)
-    read_from_xml_document(doc, base)
+  def read(io, params)
+    doc = REXML::Document.new(io)
+    read_from_xml_document(doc, params[:base])
     nil
   end
 
-  def read_from_xml_document(doc, base = URI.parse(""))
+  def read_from_xml_document(doc, base = nil)
+    if base.nil?
+      base = URI.parse("")
+    elsif not base.is_a?(URI)
+      base = URI.parse(base)
+    end
     parse_doc(doc, base)
     nil
   end
@@ -337,6 +342,8 @@ class XMLWriter
   end
   attr_reader :namespaces
 
+  private
+
   def have_property?(resource)
     resource.each_property{ return true }
     false
@@ -504,6 +511,8 @@ class XMLWriter
     end
   end
 
+  public
+
   def model2rdfxml(m)
     doc = REXML::Document.new()
     doc << REXML::Text.new("\n")
@@ -523,6 +532,12 @@ class XMLWriter
     write_top_resources(@root)
 
     doc
+  end
+
+  def write(io, m, params)
+    doc = model2rdfxml(m)
+    doc.write(REXML::Output.new(io, params[:charset] || 'utf-8'))
+    nil
   end
 end # class XMLWriter
 

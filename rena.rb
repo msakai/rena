@@ -32,11 +32,9 @@ RSS = Rena::RSS
 DC  = Rena::DC
 
 model = Rena::MemModel.new
-
-reader = Rena::XMLReader.new
-reader.model = model
-reader.read(File.open("sfc-media-center.rdf"),
-            URI.parse("http://www.tom.sfc.keio.ac.jp/~sakai/rss/sfc-media-center.rdf"))
+model.load("sfc-media-center.rdf",
+           :type => 'application/rdf+xml',
+           :base => URI.parse("http://www.tom.sfc.keio.ac.jp/~sakai/rss/sfc-media-center.rdf"))
 
 channel = model.lookup_resource(RSS::Channel)
 
