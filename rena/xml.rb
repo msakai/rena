@@ -39,9 +39,9 @@ class XMLReader
   def update_lang(old_lang, e)
     if v = e.attributes["xml:lang"]
       if v.empty?
-	nil
+        nil
       else
-	v
+        v
       end
     else
       old_lang
@@ -58,9 +58,9 @@ class XMLReader
       #raise ArgumentError
     else
       if root.namespace == RDF::Namespace and root.name == 'RDF'
-	parse_rdf(root, base)
+        parse_rdf(root, base)
       else
-	parse_nodeElement(root, base) # XXX
+        parse_nodeElement(root, base) # XXX
       end
     end
   end
@@ -105,13 +105,13 @@ class XMLReader
 
     e.attributes.each_attribute{|attr|
       if predicate = parse_propertyAttr(e, attr)
-	if predicate == RDF::Type
-	  subject.add_property(predicate,
-			       @model.create_resource(URI.parse(attr.value)))
-	else # FIXME: propertyAttrであることをチェック?
-	  subject.add_property(predicate,
-			       PlainLiteral.new(attr.value, lang))
-	end
+        if predicate == RDF::Type
+          subject.add_property(predicate,
+                               @model.create_resource(URI.parse(attr.value)))
+        else # FIXME: propertyAttrであることをチェック?
+          subject.add_property(predicate,
+                               PlainLiteral.new(attr.value, lang))
+        end
       end
     }
 
@@ -130,26 +130,26 @@ class XMLReader
 
       if e.namespace==RDF::Namespace and e.name == "li"
         # List Expansion Rules
-  	predicate = URI.parse(RDF::Namespace + "_#{li_counter+=1}")
+        predicate = URI.parse(RDF::Namespace + "_#{li_counter+=1}")
       else
-  	predicate = URI.parse(e.namespace + e.name)
+        predicate = URI.parse(e.namespace + e.name)
       end
 
       if parseType = e.attribute("parseType", RDF::Namespace)
-  	case parseType.value
-  	when "Resource"
-  	  object = parse_parseTypeResourcePropertyElt(e, new_base, new_lang)
-  	when "Collection"
+        case parseType.value
+        when "Resource"
+          object = parse_parseTypeResourcePropertyElt(e, new_base, new_lang)
+        when "Collection"
           object = parse_parseTypeCollectionPropertyElt(e, new_base, new_lang)
         when "Literal"
           object = parse_parseTypeLiteralPropertyElt(e, new_base, new_lang)
-	else
+        else
           object = parse_parseTypeOtherPropertyElt(e, new_base, new_lang)
-  	end
+        end
       elsif e.elements.size == 1
         object = parse_resourcePropertyElt(e, new_base, new_lang)
       elsif e.children.any?{|c| c.is_a? REXML::Text }
-	object = parse_literalPropertyElt(e, new_base, new_lang)
+        object = parse_literalPropertyElt(e, new_base, new_lang)
       else
         object = parse_emptyPropertyElt(e, new_base, new_lang)
       end
@@ -157,27 +157,27 @@ class XMLReader
       subject.add_property(predicate, object)
 
       if id = e.attribute("ID", RDF::Namespace)
-	@model.create_resource(new_base + ("#" + id.value)).
-	  add_property(RDF::Type, @model.create_resource(RDF::Statement)).
-	  add_property(RDF::Subject, subject).
-	  add_property(RDF::Predicate, @model.create_resource(predicate)).
-	  add_property(RDF::Object, object)
+        @model.create_resource(new_base + ("#" + id.value)).
+          add_property(RDF::Type, @model.create_resource(RDF::Statement)).
+          add_property(RDF::Subject, subject).
+          add_property(RDF::Predicate, @model.create_resource(predicate)).
+          add_property(RDF::Object, object)
       end
 
       # XXX
       unless object.is_a?(Rena::Literal)
-	e.attributes.each_attribute{|attr|
-	  if predicate2 = parse_propertyAttr(e, attr)
-	    subject2 = object
-	    # FIXME
-	    if predicate == RDF::Type
-	      object2 = @model.create_resource(URI.parse(attr.value))
-	    else
-	      object2 = PlainLiteral.new(attr.value, new_lang)
-	    end
-	    subject2.add_property(predicate2, object2)
-	  end
-	}
+        e.attributes.each_attribute{|attr|
+          if predicate2 = parse_propertyAttr(e, attr)
+            subject2 = object
+            # FIXME
+            if predicate == RDF::Type
+              object2 = @model.create_resource(URI.parse(attr.value))
+            else
+              object2 = PlainLiteral.new(attr.value, new_lang)
+            end
+            subject2.add_property(predicate2, object2)
+          end
+        }
       end
     }
   end
@@ -244,7 +244,7 @@ class XMLReader
       if resource = e.attribute("resource", RDF::Namespace)
         @model.create_resource(base + resource.value)
       elsif nodeID = e.attribute("nodeID", RDF::Namespace)
-        lookup_nodeID(nodeID.value)	
+        lookup_nodeID(nodeID.value)     
       else
         @model.create_resource
       end
@@ -269,8 +269,8 @@ class XMLReader
     elsif (attr.name==attr.expanded_name) and /^xml/i =~ attr.local_name # XXX
       nil
     elsif (ns = e.namespace(attr.prefix)) and
-	(ns != RDF::Namespace or
-	 not RDF_SyntaxNames.member?(attr.local_name))
+        (ns != RDF::Namespace or
+         not RDF_SyntaxNames.member?(attr.local_name))
       URI.parse(ns + attr.local_name)
     else
       nil
@@ -348,12 +348,12 @@ class XMLWriter
     parent = rdf
     @model.each_resource{|resource|
       if first
-	first = false
-	parent << REXML::Text.new("\n")
+        first = false
+        parent << REXML::Text.new("\n")
       end
 
       if have_property?(resource) and not @written.member?(resource)
-	write_resource(parent, resource)
+        write_resource(parent, resource)
       end
     }
   end
@@ -363,11 +363,11 @@ class XMLWriter
     ename = nil
     resource[RDF::Type].each{|t|
       begin
-	ename = fold_uri(t.uri)
-	type  = t
-	true
+        ename = fold_uri(t.uri)
+        type  = t
+        true
       rescue
-	false
+        false
       end
     }
     
@@ -401,10 +401,10 @@ class XMLWriter
       #ename = "rdf:li" if /rdf:_\d+/u =~ ename
 
       if first
-	first = false
-	parent << REXML::Text.new("\n")
+        first = false
+        parent << REXML::Text.new("\n")
       end
-	
+        
       e = REXML::Element.new(ename)
       parent << e
       parent << REXML::Text.new("\n")
@@ -417,16 +417,16 @@ class XMLWriter
           e.add_attribute(fold_uri(RDF::Namespace + "datatype"),
                           object.type.to_s)
         end
-	e << REXML::Text.new(object.to_s, true)
+        e << REXML::Text.new(object.to_s, true)
       else
-	if @written.member?(object)
-	  if object.uri
-	    e.add_attribute(fold_uri(RDF::Namespace + "resource"),
-			    object.uri.to_s)
-	  else
-	    e.add_attribute(fold_uri(RDF::Namespace + "nodeID"),
-			    blank_node_to_nodeID(object))
-	  end
+        if @written.member?(object)
+          if object.uri
+            e.add_attribute(fold_uri(RDF::Namespace + "resource"),
+                            object.uri.to_s)
+          else
+            e.add_attribute(fold_uri(RDF::Namespace + "nodeID"),
+                            blank_node_to_nodeID(object))
+          end
         else
           if object.uri
             if have_property?(object)
@@ -439,8 +439,8 @@ class XMLWriter
             write_resource(e, object) # XXX
           end
 
-	  @written << object
-	end
+          @written << object
+        end
       end
     }
   end
@@ -449,11 +449,11 @@ class XMLWriter
     uri_s = uri.to_s
     @namespaces.each_pair{|prefix, namespace|
       if /\A#{Regexp.quote(namespace)}(.*)\Z/u =~ uri_s
-	if prefix.empty?
-	  return $1
-	else
-	  return prefix + ":" + $1
-	end
+        if prefix.empty?
+          return $1
+        else
+          return prefix + ":" + $1
+        end
       end
     }
 
@@ -475,10 +475,10 @@ class XMLWriter
       prefix = "ns" + @ns_counter.to_s
       @ns_counter = @ns_counter.succ
       unless @namespaces.has_key?(prefix)
-	uri = uri.to_s.freeze
-	@namespaces[prefix] = uri
-	@root.add_namespace(prefix, uri)
-	return prefix + ":" + s
+        uri = uri.to_s.freeze
+        @namespaces[prefix] = uri
+        @root.add_namespace(prefix, uri)
+        return prefix + ":" + s
       end
     }
   end
@@ -513,9 +513,9 @@ class XMLWriter
 
     namespaces.each_pair{|prefix, namespace|
       if prefix.empty?
-	@root.add_namespace(namespace)
+        @root.add_namespace(namespace)
       else
-	@root.add_namespace(prefix, namespace)
+        @root.add_namespace(prefix, namespace)
       end
     }
 
