@@ -7,7 +7,7 @@ require 'open-uri'
 model = Rena::MemModel.new
 
 # model.load("foaf.rdf",
-#            :type => 'application/rdf+xml',
+#            :content_type => 'application/rdf+xml',
 #            :base => URI.parse("http://web.sfc.keio.ac.jp/~s01397ms/foaf.rdf"))
 model.load("http://web.sfc.keio.ac.jp/~s01397ms/foaf.rdf")
 
