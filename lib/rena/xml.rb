@@ -547,14 +547,21 @@ class Writer
     @blank_counter = 0
 
     @root = nil
+
+    @rss = false
   end
   attr_reader :namespaces
+  attr_accessor :rss
 
   private
 
   def have_property?(resource)
     resource.each_property{ return true }
     false
+  end
+
+  def force_toplevel?(object)
+    have_property?(object) and @rss # XXX
   end
 
   def write_nodeElementList(rdf)
@@ -656,7 +663,8 @@ class Writer
       next if list_used.include?([prop,object])
 
       if object.is_a?(Rena::PlainLiteral) and !object.lang and
-          (ename = fold_uri(prop,false)) and parent.attribute(ename).nil?
+          (ename = fold_uri(prop,false)) and parent.attribute(ename).nil? and
+          not @rss
         parent.add_attribute(ename, object.to_s.dup)
       else
         e = create_element[fold_uri(prop)]
@@ -695,15 +703,24 @@ class Writer
         else
           if object.uri
             if have_property?(object)
-              write_nodeElement(e, object)
+              if force_toplevel?(object)
+                write_nodeElement(@root, object)
+                e.add_attribute(fold_uri(RDF::Namespace + "resource"), object.uri.to_s)
+              else
+                write_nodeElement(e, object)
+              end
             else
-              e.add_attribute(fold_uri(RDF::Namespace + "resource"),
-                              object.uri.to_s)
+              e.add_attribute(fold_uri(RDF::Namespace + "resource"), object.uri.to_s)
             end
           else
-            write_nodeElement(e, object) # XXX
+            # XXX
+            if force_toplevel?(object)
+              write_nodeElement(@root, object)
+              e.add_attribute(fold_uri(RDF::Namespace + "nodeID"), blank_node_to_nodeID(object))
+            else
+              write_nodeElement(e, object)
+            end
           end
-
           @written << object
         end
       end

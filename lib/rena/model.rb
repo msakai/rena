@@ -215,6 +215,9 @@ class Model
     case content_type
     when /\/n-?triples\Z/i
       writer = NTriples::Writer.new
+    when /\Aapplication\/rss\+xml\Z/i, /\Atext\/xml\Z/i, /\Aapplication\/xml\Z/i
+      writer = XML::Writer.new
+      writer.rss = true
     when /\Aapplication\/rdf\+xml\Z/i, /\Atext\/xml\Z/i, /\Aapplication\/xml\Z/i
       writer = XML::Writer.new
     else
