@@ -30,6 +30,8 @@ class Reader
       base ||= io.base_uri
     end
 
+    @warn = params[:warn]
+
     doc = REXML::Document.new(REXML::IOSource.new(io)) # XXX
     read_from_xml_document(doc, base)
     nil
@@ -71,6 +73,11 @@ class Reader
     end
   end
 
+  def warn(msg)    
+    @warn[msg] if @warn
+    nil
+  end
+
   def parse_doc(doc, base = URI.parse(""))
     root = doc.root
     if root
@@ -105,7 +112,7 @@ class Reader
     about  = get_attribute(e, "about",  RDF::Namespace)
 
     if [id, nodeID, about].compact.size > 1
-      raise LoadError.new
+      raise LoadError.new # FIXME
     end
 
     if id
@@ -124,15 +131,19 @@ class Reader
       subject = @model.create_resource
     end
 
-    # FIXME
+    # nodeElementURIs
     if e.namespace == RDF::Namespace
-      if ["RDF","ID","about","parseType","resource","nodeID","datatype","li","aboutEach","aboutEachPrefix","bagID"].member?(e.local_name)
-        raise LoadError.new
+      if ["RDF","ID","about","parseType","resource","nodeID","datatype"].member?(e.local_name) or # coreSyntaxTerms
+          "li" == e.local_name or
+          ["aboutEach", "aboutEachPrefix", "bagID"].member?(e.local_name) # oldTerms
+        raise LoadError.new # FIXME
+      elsif e.local_name != "Description"
+        warn("Illegal or unusual use of names from the RDF namespace: " + e.expanded_name)
       end
     end
 
-    unless e.namespace == RDF::Namespace and e.name == "Description"
-      uri = URI.parse(e.namespace + e.name)
+    unless e.namespace == RDF::Namespace and e.local_name == "Description"
+      uri = URI.parse(e.namespace + e.local_name)
       subject.add_property(RDF::Type, @model.create_resource(uri))
     end
 
@@ -165,20 +176,22 @@ class Reader
       if e.namespace == RDF::Namespace
         if ["RDF","ID","about","parseType","resource","nodeID","datatype","Description","aboutEach","aboutEachPrefix","bagID"].member?(e.local_name)
           raise LoadError.new
+        elsif e.local_name != "li"
+          warn("Illegal or unusual use of names from the RDF namespace: " + e.expanded_name)
         end
       end
 
-      if e.namespace==RDF::Namespace and e.name == "li"
+      if e.namespace==RDF::Namespace and e.local_name == "li"
         # List Expansion Rules
         predicate = URI.parse(RDF::Namespace + "_#{li_counter+=1}")
       else
-        predicate = URI.parse(e.namespace + e.name)
+        predicate = URI.parse(e.namespace + e.local_name)
       end
 
       parseType = get_attribute(e, "parseType", RDF::Namespace)
 
       if parseType
-        # FIXME: rdf:ID以外のrdf:* は全部エラー
+        # FIXME: rdf:ID以外のアトリビュートは全部エラーに
         if get_attribute(e, "resource", RDF::Namespace)
           raise LoadError.new("specifying an rdf:parseType of \"#{parseType.value}\" and an rdf:resource attribute at the same time is an error.")
         end
@@ -264,10 +277,13 @@ class Reader
   end
 
   def parse_resourcePropertyElt(e, base, lang=nil)
+    # FIXME: rdf:ID以外のアトリビュートをエラーに
     parse_nodeElement(e.elements[1], base, lang)
   end
 
   def parse_literalPropertyElt(e, base, lang=nil)
+    # FIXME: rdf:IDとrdf:datatype以外のアトリビュートをエラーに
+
     s = e.children.select{|c| c.is_a?(REXML::Text) }.map{|c| c.value }.join('')
     if attr_type = get_attribute(e, "datatype", RDF::Namespace)
       TypedLiteral.new(s, base + attr_type.value)
@@ -278,10 +294,10 @@ class Reader
 
   def parse_emptyPropertyElt(e, base, lang=nil)
     # XXX: If there are no attributes or only the optional rdf:ID attribute i.
-    flag = true
+    is_literal = true
     e.attributes.each_attribute{|attr|
       if parse_propertyAttr(attr)
-        flag = false
+        is_literal = false
         break
       end
 
@@ -290,12 +306,12 @@ class Reader
       elsif /^xml/ =~ attr.prefix or attr.namespace == XMLNamespace
         next
       else
-        flag = false
+        is_literal = false
         break
       end
     }
 
-    if flag
+    if is_literal
       PlainLiteral.new('', lang)
     else
       resource = get_attribute(e, "resource", RDF::Namespace)
@@ -329,7 +345,7 @@ class Reader
   def parse_propertyAttr(attr)
     if /^xml/i =~ attr.prefix
       nil
-    elsif (attr.name==attr.expanded_name) and /^xml/i =~ attr.local_name # XXX
+    elsif (attr.local_name==attr.expanded_name) and /^xml/i =~ attr.local_name # XXX
       nil
     else
       ns = attr.namespace
@@ -337,6 +353,7 @@ class Reader
       return nil if ns == XMLNamespace
 
       if ns==RDF::Namespace
+        # oldTerms
         if ["aboutEach", "aboutEachPrefix", "bagID"].member?(attr.local_name)
           raise LoadError.new("rdf:aboutEach, rdf:aboutEachPrefix and rdf:bagID are obsoleted")
         end
@@ -345,9 +362,12 @@ class Reader
           raise LoadError.new
         end
 
+        # coreSyntaxTerms - RDF
         if ["ID", "about", "parseType", "resource", "nodeID", "datatype"].member?(attr.local_name)
           return nil
         end
+
+        warn("Illegal or unusual use of names from the RDF namespace: " + attr.expanded_name)
       end
 
       uri = URI.parse(ns + attr.local_name)
