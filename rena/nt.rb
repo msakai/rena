@@ -68,7 +68,7 @@ class NTReader
       end
 
       unless /\A\s*\.\s*\Z/ =~ line
-	raise RuntimeError(line.inspect)
+	raise RuntimeError.new(line.inspect)
       end
 
       subject.add_property(predicate, object)
@@ -83,12 +83,45 @@ end
 
 
 
-=begin
 class NTWriter
-  def initialize
+
+  def model2nt(m)
+    require 'stringio'
+    io = StringIO.new
+    self.class.write_model(m, io)
+    io.string
+  end
+
+  def self.write_model(m, io)
+    blank_node_counter = 0
+    blank_nodes_to_id = Hash.new
+    resource_to_nt = lambda{|resource|
+      if resource.uri
+        '<' + resource.uri.to_s + '>'
+      else
+        "_:" + (blank_nodes_to_id[resource] ||= "a" + (blank_node_counter += 1).to_s)
+      end
+    }
+
+    m.each_resource{|subject|
+      subject_str = resource_to_nt[subject]
+      subject.each_property{|prop, object|
+        io.print subject_str
+        io.print " "
+        io.print("<", prop.to_s, ">")
+        io.print " "
+        if object.is_a? Literal
+          io.print object.nt
+        else
+          io.print resource_to_nt[object]
+        end
+        io.print " .\n"
+      }
+    }
+
+    nil
   end
 end
-=end
 
 
 end #module Rena

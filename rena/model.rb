@@ -36,7 +36,11 @@ class PlainLiteral < Literal
   end
 
   def inspect
-    s = to_s.inspect
+    nt
+  end
+
+  def nt
+    s = to_s.inspect # FIXME
     s << "@" + @lang if @lang 
     s
   end
@@ -66,6 +70,10 @@ class TypedLiteral < Literal
   end
 
   def inspect
+    nt
+  end
+
+  def nt
     s = to_s.inspect
     s << "^^<" + @type.to_s + ">" if @type
     s

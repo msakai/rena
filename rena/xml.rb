@@ -299,12 +299,12 @@ class XMLReader
       xmlfile.close(false)
 
       xpathfile = Tempfile.new('rena-xpath')
-      xpath = create_xpath(e) + '/descendant::node()'          
+      xpath = create_xpath(e) + '/descendant::node()'
       xpath = "(//@* | //namespace::* | " + xpath + ")"
       xpathfile.puts("<XPath>", xpath, "</XPath>")
       xpathfile.close(false)
 
-      s = `./testC14N --exc-with-comments #{xmlfile.path.sub(%!/cygdrive/c!,"c:")} #{xpathfile.path.sub(%!/cygdrive/c!,"c:")}`
+      s = `./testC14N --exc-with-comments #{xmlfile.path.sub(%!/cygdrive/c!,"c:")} #{xpathfile.path.sub(%!/cygdrive/c!,"c:")}` # XXX
       s.gsub!(/\r\n/, "\n")
       s
     rescue

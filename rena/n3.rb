@@ -1,3 +1,4 @@
+=begin
 require 'stringio'
 
 module Rena
@@ -80,3 +81,4 @@ class N3Writer
 end # class Model
 
 end # module Rena
+=end
