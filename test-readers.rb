@@ -3,6 +3,7 @@ require 'rena'
 require 'hyperset'
 require 'test/unit'
 require 'find'
+require 'pp'
 $KCODE='utf-8'
 
 class TestReaders < Test::Unit::TestCase
@@ -90,6 +91,7 @@ class TestReaders < Test::Unit::TestCase
   base = "approved_20031114"
   Dir.entries(base).each{|e|
   #["rdf-containers-syntax-vs-schema"].each{|e|
+  #["rdfms-xml-literal-namespaces"].each{|e|
     next if ["..", "."].member?(e)
     fname = File.join(base, e)
     next unless File.directory?(fname)
