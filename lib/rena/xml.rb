@@ -125,6 +125,8 @@ class Reader
       subject = @model.create_resource(uri)
     elsif nodeID
       # FIXME: rdfms-syntax-incomplete/error001.rdf
+      # The value of rdf:nodeID must match the XML Name production,
+      # (as modified by XML Namespaces).
       subject = lookup_nodeID(nodeID.value)
     elsif about
       subject = @model.create_resource(base + about.value)
@@ -591,16 +593,18 @@ class Writer
         e << REXML::Text.new(object.to_s, true)
         e.add_attribute("xml:lang", object.lang.to_s) if object.lang
       elsif object.is_a?(Rena::TypedLiteral)
-        unless XMLLiteral_DATATYPE_URI == object.type
-          e << REXML::Text.new(object.to_s, true)
-          e.add_attribute(fold_uri(RDF::Namespace + "datatype"),
-                          object.type.to_s)
-        else
+        if XMLLiteral_DATATYPE_URI == object.type
           tmp = REXML::Document.new('<dummy>' + object.to_s + '</dummy>')
           tmp.root.children.to_a.each{|child|
             e << child.remove
           }
           e.add_attribute(fold_uri(RDF::Namespace + "parseType"), 'Literal')
+        elsif not object.to_s.empty?        
+          e << REXML::Text.new(object.to_s, true)
+          e.add_attribute(fold_uri(RDF::Namespace + "datatype"),
+                          object.type.to_s)
+        else
+          raise SaveError.new("can't write empty TypedLiteral")
         end
       else
         if @written.member?(object)
