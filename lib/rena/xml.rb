@@ -557,7 +557,7 @@ class Writer
     false
   end
 
-  def write_top_resources(rdf)
+  def write_nodeElementList(rdf)
     first = true
     parent = rdf
     f = lambda{|resource|
@@ -565,7 +565,7 @@ class Writer
         first = false
         parent << REXML::Text.new("\n")
       end
-      write_resource(parent, resource)
+      write_nodeElement(parent, resource)
     }
 
     @model.each_resource{|resource|
@@ -591,7 +591,7 @@ class Writer
     }    
   end
 
-  def write_resource(parent, resource)
+  def write_nodeElement(parent, resource)
     type  = nil
     ename = nil
     resource.get_property_values(RDF::Type).each{|t|
@@ -618,13 +618,13 @@ class Writer
 
     unless @written.member?(resource)
       @written << resource
-      write_predicates(e, resource, type)
+      write_propertyEltList(e, resource, type)
     end
 
     e
   end
 
-  def write_predicates(parent, resource, type = nil)
+  def write_propertyEltList(parent, resource, type = nil)
     first = true
     create_element = lambda{|ename|
       if first
@@ -637,23 +637,39 @@ class Writer
       e
     }
 
+    list_used = Set[]
+    i = 1
+    loop{
+      prop = URI.parse("http://www.w3.org/1999/02/22-rdf-syntax-ns#_#{i.to_s}")
+      if object = resource.get_property(prop)
+        e = create_element["rdf:li"]
+        write_propertyElt(e, prop, object)
+        list_used << [prop,object]
+        i += 1
+      else
+        break;
+      end
+    }
+
     resource.each_property{|prop, object|
       next if prop == RDF::Type and object == type
+      next if list_used.include?([prop,object])
 
-      ename = fold_uri(prop)
-      #ename = "rdf:li" if /rdf:_\d+/u =~ ename
+      if object.is_a?(Rena::PlainLiteral) and !object.lang and
+          (ename = fold_uri(prop,false)) and parent.attribute(ename).nil?
+        parent.add_attribute(ename, object.to_s)
+      else
+        e = create_element[fold_uri(prop)]
+        write_propertyElt(e, prop, object)
+      end
+    }
+  end
 
+  def write_propertyElt(e,prop,object)
       if object.is_a?(Rena::PlainLiteral)
-        if !object.lang and parent.attribute(ename).nil?
-          #e.remove
-          parent.add_attribute(ename, object.to_s)
-        else
-          e = create_element[ename]
-          e << REXML::Text.new(object.to_s.dup, true)
-          e.add_attribute("xml:lang", object.lang.to_s.dup) if object.lang
-        end
+        e << REXML::Text.new(object.to_s.dup, true)
+        e.add_attribute("xml:lang", object.lang.to_s.dup) if object.lang
       elsif object.is_a?(Rena::TypedLiteral)
-        e = create_element[ename]
         if XMLLiteral_DATATYPE_URI == object.type
           tmp = REXML::Document.new('<dummy>' + object.to_s + '</dummy>')
           tmp.root.children.to_a.each{|child|
@@ -668,7 +684,6 @@ class Writer
           raise SaveError.new("can't write empty TypedLiteral")
         end
       else
-        e = create_element[ename]
         if @written.member?(object)
           if object.uri
             e.add_attribute(fold_uri(RDF::Namespace + "resource"),
@@ -680,22 +695,21 @@ class Writer
         else
           if object.uri
             if have_property?(object)
-              write_resource(e, object)
+              write_nodeElement(e, object)
             else
               e.add_attribute(fold_uri(RDF::Namespace + "resource"),
                               object.uri.to_s)
             end
           else
-            write_resource(e, object) # XXX
+            write_nodeElement(e, object) # XXX
           end
 
           @written << object
         end
       end
-    }
   end
 
-  def fold_uri(uri)
+  def fold_uri(uri, allow_empty_prefix = true)
     uri_s = uri.to_s
     result = nil
 
@@ -705,7 +719,7 @@ class Writer
         next unless XML.is_NCName(tmp)
 
         if prefix.empty?
-          return tmp
+          return tmp if allow_empty_prefix
         else
           return prefix + ":" + tmp
         end
@@ -779,7 +793,7 @@ class Writer
     }
 
     @model = m
-    write_top_resources(@root)
+    write_nodeElementList(@root)
 
     doc
   end
