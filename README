@@ -7,6 +7,10 @@ Requirements
 ------------
 
   * ruby 1.8
+    <http://www.ruby-lang.org/>
+
+  * Unicode library 0.1 (optional)
+    <http://www.yoshidam.net/Ruby.html>
 
 Install
 -------
@@ -26,6 +30,7 @@ Usage
 -----
 
   not documented yet.
+  see samples/*.
 
 License
 -------

@@ -7,11 +7,27 @@ module Rena
 
 
 class Literal
+
+  begin
+    # http://www.yoshidam.net/Ruby_ja.html
+    require 'unicode'
+    def _unicode_nfc(str)
+      Unicode.normalize_C(str)
+    end
+  rescue LoadError
+    def _unicode_nfc(str)
+      str
+    end
+  end
+
   def initialize(str)
     str.unpack('U*')
+    str = _unicode_nfc(str)
     @str = str
     @str.freeze
   end
+
+  public
 
   def to_s
     @str
