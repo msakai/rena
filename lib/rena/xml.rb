@@ -71,10 +71,7 @@ class Reader
 
   def parse_doc(doc, base = URI.parse(""))
     root = doc.root
-    unless root.is_a? REXML::Element
-      # FIXME
-      #raise ArgumentError
-    else
+    if root
       if root.namespace == RDF::Namespace and root.name == 'RDF'
         parse_rdf(root, base)
       else
@@ -84,14 +81,9 @@ class Reader
   end
 
   def parse_rdf(rdf, base, lang = nil)
-    if rdf.namespace == RDF::Namespace and rdf.name == "RDF"
-      base = update_base(base, rdf)
-      lang = update_lang(lang, rdf)
-      parse_nodeElementList(rdf.elements, base, lang)
-    else
-      # XXX
-      raise TypeError.new
-    end
+    base = update_base(base, rdf)
+    lang = update_lang(lang, rdf)
+    parse_nodeElementList(rdf.elements, base, lang)
   end
 
   def parse_nodeElementList(elements, base, lang)
