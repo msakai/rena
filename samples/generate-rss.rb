@@ -33,4 +33,6 @@ item.
   add_property(DC::Date, PlainLiteral.new("2004-02-10"))
 
 
-m.save(STDOUT, :charset=>"shift_jis")
+m.save(STDOUT,
+       :content_type => "application/rdf+xml",
+       :charset => "shift_jis")
