@@ -116,15 +116,9 @@ class Reader
     end
 
     if id
-      uri = base.dup
-      uri.fragment = id.value
-      check_id(uri)
-      subject = @model.create_resource(uri)
+      subject = parse_idAttr(id, base)
     elsif nodeID
-      # FIXME: rdfms-syntax-incomplete/error001.rdf
-      # The value of rdf:nodeID must match the XML Name production,
-      # (as modified by XML Namespaces).
-      subject = lookup_nodeID(nodeID.value)
+      subject = parse_nodeIdAttr(nodeID)
     elsif about
       subject = @model.create_resource(base + about.value)
     else
@@ -221,10 +215,7 @@ class Reader
       subject.add_property(predicate, object)
 
       if id = get_attribute(e, "ID", RDF::Namespace)
-        uri = new_base + ("#" + id.value)
-        check_id(uri)
-
-        @model.create_resource(uri).
+        parse_idAttr(id, new_base).
           add_property(RDF::Type, @model.create_resource(RDF::Statement)).
           add_property(RDF::Subject, subject).
           add_property(RDF::Predicate, @model.create_resource(predicate)).
@@ -325,7 +316,7 @@ class Reader
       if resource
         @model.create_resource(base + resource.value)
       elsif nodeID
-        lookup_nodeID(nodeID.value)     
+        parse_nodeIdAttr(nodeID)
       else
         @model.create_resource
       end
@@ -376,17 +367,40 @@ class Reader
     end
   end
 
-  private
+  def parse_idAttr(attr, base)
+    unless is_NCName(attr.value)
+      raise LoadError.new("The value of rdf:ID (#{attr.value.inspect}) must match the XML Name production, (as modified by XML Namespaces). ")
+    end
 
-  def lookup_nodeID(nodeID)
-    @blank_nodes[nodeID] ||= @model.create_resource
-  end
+    uri = base.dup
+    uri.fragment = attr.value
+    uri.freeze
 
-  def check_id(uri)
     if @used_id.member?(uri)
       raise LoadError.new("two elements cannot use the same ID")
     else
       @used_id.push uri
+    end
+
+    @model.create_resource(uri)
+  end
+
+  def parse_nodeIdAttr(attr)
+    unless is_NCName(attr.value)
+      raise LoadError.new("The value of rdf:nodeID (#{attr.value.inspect}) must match the XML Name production, (as modified by XML Namespaces). ")
+    end
+
+    @blank_nodes[attr.value] ||= @model.create_resource
+  end
+
+  private
+
+  # FIXME
+  def is_NCName(str)
+    if /^(?:\d|_)/ =~ str or /[:\/]/ =~ str
+      false
+    else
+      true
     end
   end
 
