@@ -61,26 +61,38 @@ class Reader
   attr_accessor :model
 
   def read(io, params)
-    io.each{|line|
-      next if /\A\s*#/ =~ line
-      next if /\A\s*\Z/ =~ line
+    io.each_line("\n"){|line|
+      line.split(/\r/).each{|line2|
+        parse_line(line2)
+      }
+    }
+  end
+
+  private
+  def lookup_nodeID(nodeID)
+    @blank_nodes[nodeID] ||= @model.create_resource
+  end
+
+  def parse_line(line)
+      return if /\A\s*#/ =~ line
+      return if /\A\s*\Z/ =~ line
 
       if line.sub!(/\A\s*<([^>]*)>/, '')
-        subject = @model.create_resource(URI.parse(NTriples.unescape($1)))
+        subject = @model.create_resource(parse_uri($1))
       elsif line.sub!(/\A\s*_:([A-Za-z][A-Za-z0-9]*)/, '')
         subject = lookup_nodeID($1)
       else
-        raise RuntimeError.new(line.inspect)
+        raise LoadError.new(line.inspect)
       end
 
       if line.sub!(/\A\s*<([^>]*)>/, '')
-        predicate = URI.parse(NTriples.unescape($1)) # ???
+        predicate = parse_uri($1)
       else
-        raise RuntimeError.new(line.inspect)
+        raise LoadError.new(line.inspect)
       end
 
       if line.sub!(/\A\s*<([^>]*)>/, '')
-        object = @model.create_resource(URI.parse($1))
+        object = @model.create_resource(parse_uri($1))
       elsif line.sub!(/\A\s*_:([A-Za-z][A-Za-z0-9]*)/, '')
         object = lookup_nodeID($1)
       elsif line.sub!(/\A\s*"((?:\\"|[^"])*)"(?:@([a-zA-Z_\-]*))?(?:\^\^<([^>]*)>)?/, '')
@@ -90,25 +102,23 @@ class Reader
         str = NTriples.unescape(str)
 
         if type
-          object = TypedLiteral.new(str, URI.parse(type))
+          object = TypedLiteral.new(str, parse_uri(type))
         else
           object = PlainLiteral.new(str, lang)
         end
       else
-        raise RuntimeError.new(line.inspect)
+        raise LoadError.new(line.inspect)
       end
 
       unless /\A\s*\.\s*\Z/ =~ line
-        raise RuntimeError.new(line.inspect)
+        raise LoadError.new(line.inspect)
       end
 
       subject.add_property(predicate, object)
-    }
   end
 
-  private
-  def lookup_nodeID(nodeID)
-    @blank_nodes[nodeID] ||= @model.create_resource
+  def parse_uri(s)
+    URI.parse(NTriples.unescape(s))
   end
 end # class Reader
 
