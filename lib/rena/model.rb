@@ -184,6 +184,33 @@ class Model
   def each_statement(&block)
     raise RuntimeError.new("implement this method")
   end
+
+  def merge!(model, h = nil)
+    if h.nil?
+      h = Hash.new
+    else
+      h = h.dup
+    end
+
+    f = lambda{|x|
+      if x.is_a?(Literal)
+        x
+      elsif x.uri
+        create_resource(x.uri)
+      else
+        h[x] ||= create_resource
+      end
+    }
+
+    model.each_resource{|from|
+      subject = f[from]
+      from.each_property{|prop,object|
+        subject.add_property(prop, f[x])
+      }
+    }
+
+    nil
+  end
 end
 
 
