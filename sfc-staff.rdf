@@ -1,0 +1,774 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns="http://www.w3.org/2002/12/cal/ical#"
+  xmlns:x='http://www.w3.org/2002/12/cal/prod_apple#'
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+>
+ <Vcalendar>
+  <prodid>-//Masahiro Sakai/generate-calendar.rb 1.0//EN</prodid>
+  <version>2.0</version>
+  <x:wrCalname>慶應義塾SFC学事日程 - 教員用</x:wrCalname>
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-06</dateTime>
+    </dtstart>
+    <uid>12b1cb2a5420e026d782acee5ff8c616ce86029a</uid>
+    <summary>事務室開室</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-07</dateTime>
+    </dtstart>
+    <uid>18592d22c33bf40b56f5d89b2a2356cd9560d611</uid>
+    <summary>授業開始</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-07T17:30:00</dateTime>
+    </dtstart>
+    <uid>58f4ab8724532a74d777568be5179b0fa19df4b7</uid>
+    <summary>教職員新年会</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-08</dateTime>
+    </dtstart>
+    <uid>0a99e2fcc76770bf24a9bae72b11891ec2f42e59</uid>
+    <summary>月曜相当講義日</summary>
+    <description>&lt;a href=&quot;http://www.gakuji.keio.ac.jp/academic/schedule/daitaikougi.html&quot;&gt;月曜相当講義日&lt;/a&gt;（月曜日の時間割にて講義を実施します.）</description>
+    <foaf:page rdf:resource="http://www.gakuji.keio.ac.jp/academic/schedule/daitaikougi.html" />
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-08</dateTime>
+    </dtstart>
+    <uid>5576793b58cbed355c932dc8b8dc63b6e0b89863</uid>
+    <summary>2004年度講義案内原稿入力締切</summary>
+    <description>&lt;a href=&quot;https://vu.sfc.keio.ac.jp/course/faculty/&quot;&gt;*2004年度講義案内原稿入力締切&lt;/a&gt;</description>
+    <foaf:page rdf:resource="https://vu.sfc.keio.ac.jp/course/faculty/" />
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-09</dateTime>
+    </dtstart>
+    <uid>01fff2ddd0d31a96155ceff9687cf5a93fb608e8</uid>
+    <summary>補講日 </summary>
+    <description>補講日（土曜相当講義日） （他キャンパスでは土曜日の時間割で授業を実施します．）</description>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-14T13:00:00</dateTime>
+    </dtstart>
+    <uid>830bd954fcae9583b66a3b145200d16e48688ad3</uid>
+    <summary>研究科委員会</summary>
+    <description>研究科委員会（１３：００）</description>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-14T15:00:00</dateTime>
+    </dtstart>
+    <uid>78477f90dab4dbdd983c8a88d39c262a77f67922</uid>
+    <summary>3月修了予定者修士論文提出締切提出書式</summary>
+    <description>3月修了予定者修士論文提出締切&lt;a href=&quot;http://www.sfc.keio.ac.jp/mag/gakuji/shoshiki.html&quot; 
+&gt;提出書式&lt;/a&gt;</description>
+    <foaf:page rdf:resource="http://www.sfc.keio.ac.jp/mag/gakuji/shoshiki.html" />
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-14T15:00:00</dateTime>
+    </dtstart>
+    <uid>31ff4964c3499b37db981b80ea38680f538a7b68</uid>
+    <summary>合同運営委員会</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-14T18:00:00</dateTime>
+    </dtstart>
+    <uid>82db5a12abc78748a1f8ca5b79410415cd5acf00</uid>
+    <summary>SFC研究所運営会議</summary>
+    <description>SFC研究所運営会議＠第2会議室</description>
+    <location>第2会議室</location>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-21</dateTime>
+    </dtstart>
+    <uid>f09d86134c298640f98bd461b212677e3d66dbcc</uid>
+    <summary>秋学期授業終了</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-21T10:00:00</dateTime>
+    </dtstart>
+    <uid>02b08c31c8517dabc370a7069fee0992aa7ca922</uid>
+    <summary>大学院チェアパーソン・学習指導会議</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-21T13:00:00</dateTime>
+    </dtstart>
+    <uid>b7db219573ac18d264bf517a012e1dc612bbf7b0</uid>
+    <summary>大学院セミナー</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-22</dateTime>
+    </dtstart>
+    <uid>a821e9d62cc2fb88f9ad1a0da761deae2def563f</uid>
+    <summary>補講日</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-23</dateTime>
+    </dtstart>
+    <uid>a4b9657b2af5339271c27d8e586f64cf50babbdf</uid>
+    <summary>秋学期末試験開始</summary>
+    <description>秋学期末試験開始（〜2/5）</description>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-01-28T10:00:00</dateTime>
+    </dtstart>
+    <uid>31ff4964c3499b37db981b80ea38680f538a7b68</uid>
+    <summary>合同運営委員会</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-02-04</dateTime>
+    </dtstart>
+    <uid>4f6aed756581440817619898253e2c2cd43cfed2</uid>
+    <summary>3月修了予定者修士最終試験</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-02-04T18:00:00</dateTime>
+    </dtstart>
+    <dtend rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-02-04T19:30:00</dateTime>
+    </dtend>
+    <uid>82db5a12abc78748a1f8ca5b79410415cd5acf00</uid>
+    <summary>SFC研究所運営会議</summary>
+    <description>SFC研究所運営会議＠第2会議室</description>
+    <location>第2会議室</location>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-02-05</dateTime>
+    </dtstart>
+    <uid>4f6aed756581440817619898253e2c2cd43cfed2</uid>
+    <summary>3月修了予定者修士最終試験</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-02-05T15:00:00</dateTime>
+    </dtstart>
+    <uid>3ff6472f9ca9f9a1c695612d5ca423b0647fbee7</uid>
+    <summary>研究科委員会</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-02-05T17:00:00</dateTime>
+    </dtstart>
+    <dtend rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-02-05T18:00:00</dateTime>
+    </dtend>
+    <uid>137c40d470c38b57fb74e09c82b3d0dfcd686a49</uid>
+    <summary>合同運営委員会</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-02-10T10:00:00</dateTime>
+    </dtstart>
+    <uid>02b08c31c8517dabc370a7069fee0992aa7ca922</uid>
+    <summary>大学院チェアパーソン・学習指導会議</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-02-10T13:00:00</dateTime>
+    </dtstart>
+    <uid>b7db219573ac18d264bf517a012e1dc612bbf7b0</uid>
+    <summary>大学院セミナー</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-02-12T17:00:00</dateTime>
+    </dtstart>
+    <uid>3b5be7f2a498c9d0589c0050f6ba5879226d0656</uid>
+    <summary>３月修了予定者修士論文修正リスト提出締切</summary>
+    <description>３月修了予定者修士論文修正リスト提出締切（主査提出のみ事務受付）</description>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-02-19</dateTime>
+    </dtstart>
+    <uid>f455e063303ca5b294904a4d7fc48ae21d234f49</uid>
+    <summary>総合政策学部入試</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-02-19T16:40:00</dateTime>
+    </dtstart>
+    <uid>01a3357f32f5808290bd8599fa9246fba4e0566a</uid>
+    <summary>３月修了予定者修士論文修正論文提出締切</summary>
+    <description>３月修了予定者修士論文修正論文提出締切（Ａ館１階事務室提出・１冊）</description>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-02-20</dateTime>
+    </dtstart>
+    <uid>49989fb0186c3176abdd8576ec94e8c2ece77dba</uid>
+    <summary>環境情報学部入試</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-02-28</dateTime>
+    </dtstart>
+    <uid>7d46558476e8c4a3b386b15d13543bf9ab8f379e</uid>
+    <summary>卒業制作展</summary>
+    <description>&lt;a href=&quot;http://exhibition2004.sfc.keio.ac.jp/&quot; 
+&gt;卒業制作展＠赤レンガ倉庫&lt;/a&gt;</description>
+    <location>赤レンガ倉庫</location>
+    <foaf:page rdf:resource="http://exhibition2004.sfc.keio.ac.jp/" />
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-02-29</dateTime>
+    </dtstart>
+    <uid>7d46558476e8c4a3b386b15d13543bf9ab8f379e</uid>
+    <summary>卒業制作展</summary>
+    <description>&lt;a href=&quot;http://exhibition2004.sfc.keio.ac.jp/&quot; 
+&gt;卒業制作展＠赤レンガ倉庫&lt;/a&gt;</description>
+    <location>赤レンガ倉庫</location>
+    <foaf:page rdf:resource="http://exhibition2004.sfc.keio.ac.jp/" />
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-03-02</dateTime>
+    </dtstart>
+    <uid>a1223853fcc25b89d3c88a85f0fecc9e7eca9e90</uid>
+    <summary>学部学習指導会議</summary>
+    <description>学部学習指導会議(時間未定)</description>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-03-02T10:00:00</dateTime>
+    </dtstart>
+    <uid>b7db219573ac18d264bf517a012e1dc612bbf7b0</uid>
+    <summary>大学院セミナー</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-03-03T10:00:00</dateTime>
+    </dtstart>
+    <uid>02b08c31c8517dabc370a7069fee0992aa7ca922</uid>
+    <summary>大学院チェアパーソン・学習指導会議</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-03-03T13:00:00</dateTime>
+    </dtstart>
+    <uid>31ff4964c3499b37db981b80ea38680f538a7b68</uid>
+    <summary>合同運営委員会</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-03-03T15:00:00</dateTime>
+    </dtstart>
+    <uid>c7e397997cc148b9a01c04031b84e4b4f38705c2</uid>
+    <summary>合同教員会議</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-03-03T17:00:00</dateTime>
+    </dtstart>
+    <uid>3ff6472f9ca9f9a1c695612d5ca423b0647fbee7</uid>
+    <summary>研究科委員会</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-03-03T19:00:00</dateTime>
+    </dtstart>
+    <uid>1a38de0bdaefe17a2ab52e5f23ebc29910c593ee</uid>
+    <summary>定年退職者送別懇親会</summary>
+    <description>定年退職者送別懇親会＠Σ学生食堂</description>
+    <location>Σ学生食堂</location>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-03-06T13:00:00</dateTime>
+    </dtstart>
+    <dtend rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-03-06T21:00:00</dateTime>
+    </dtend>
+    <uid>9eaecc973a7f22fff23256d6e3855cb431572ea7</uid>
+    <summary>運営委員集中会議</summary>
+    <description>運営委員集中会議＠大会議室</description>
+    <location>大会議室</location>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-03-22</dateTime>
+    </dtstart>
+    <uid>7b7a452d1910f54141a4fe66f24752f9048a40df</uid>
+    <summary>TakeOffRally</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-03-23</dateTime>
+    </dtstart>
+    <uid>b89f2abce9c9817c596a369e47fdbab0d4fcac77</uid>
+    <summary>卒業式</summary>
+    <description>&lt;a href=&quot;http://www.gakuji.keio.ac.jp/schedule/grad.html&quot;&gt;卒業式(学部)&lt;/a&gt;</description>
+    <foaf:page rdf:resource="http://www.gakuji.keio.ac.jp/schedule/grad.html" />
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-03-29</dateTime>
+    </dtstart>
+    <uid>48dcf382298769de6553b24ebf779a66b09a091d</uid>
+    <summary>学位授与式</summary>
+    <description>&lt;a href=&quot;http://www.gakuji.keio.ac.jp/schedule/grad.html&quot;&gt;学位授与式&lt;/a&gt;</description>
+    <foaf:page rdf:resource="http://www.gakuji.keio.ac.jp/schedule/grad.html" />
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-03-31T15:00:00</dateTime>
+    </dtstart>
+    <uid>31ff4964c3499b37db981b80ea38680f538a7b68</uid>
+    <summary>合同運営委員会</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-04-01</dateTime>
+    </dtstart>
+    <uid>54574157c5126038be9e1ead01cf3ad702a13688</uid>
+    <summary>学部ガイダンス</summary>
+    <description>学部ガイダンス(〜4/7まで)</description>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-04-03T10:00:00</dateTime>
+    </dtstart>
+    <dtend rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-04-03T11:15:00</dateTime>
+    </dtend>
+    <uid>e5f468947a71962c0da2f1ec81a73bc4ea498ec6</uid>
+    <summary>学部入学式</summary>
+    <description>学部入学式＠日吉記念館</description>
+    <location>日吉記念館</location>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-04-06</dateTime>
+    </dtstart>
+    <uid>3bf7f3ce636f847f5ff4668261f15faba2d8a008</uid>
+    <summary>大学院ガイダンス</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-04-07T10:00:00</dateTime>
+    </dtstart>
+    <uid>731b3ccd3c5a45caaab07818efbaddca32019e77</uid>
+    <summary>大学院入学式</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-04-08</dateTime>
+    </dtstart>
+    <uid>85235a18b20f699090ed9fb1990a40de5820bbfa</uid>
+    <summary>春学期授業開始</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-07-14</dateTime>
+    </dtstart>
+    <uid>62fa15546c7f15e4fbc55232e5ac2f51abcabdf0</uid>
+    <summary>授業終了</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-08-08</dateTime>
+    </dtstart>
+    <uid>b99539c3d9bc6aaf41e105cadd86573bc6e8b99c</uid>
+    <summary> 事務室閉鎖</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-08-09</dateTime>
+    </dtstart>
+    <uid>b99539c3d9bc6aaf41e105cadd86573bc6e8b99c</uid>
+    <summary> 事務室閉鎖</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-08-10</dateTime>
+    </dtstart>
+    <uid>b99539c3d9bc6aaf41e105cadd86573bc6e8b99c</uid>
+    <summary> 事務室閉鎖</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-08-11</dateTime>
+    </dtstart>
+    <uid>b99539c3d9bc6aaf41e105cadd86573bc6e8b99c</uid>
+    <summary> 事務室閉鎖</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-08-12</dateTime>
+    </dtstart>
+    <uid>b99539c3d9bc6aaf41e105cadd86573bc6e8b99c</uid>
+    <summary> 事務室閉鎖</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-08-13</dateTime>
+    </dtstart>
+    <uid>b99539c3d9bc6aaf41e105cadd86573bc6e8b99c</uid>
+    <summary> 事務室閉鎖</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-08-14</dateTime>
+    </dtstart>
+    <uid>b99539c3d9bc6aaf41e105cadd86573bc6e8b99c</uid>
+    <summary> 事務室閉鎖</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-09-18</dateTime>
+    </dtstart>
+    <uid>94fb518b35239c264895acbfec17cc0b0ae3f9be</uid>
+    <summary>学部卒業式</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-09-27</dateTime>
+    </dtstart>
+    <uid>18592d22c33bf40b56f5d89b2a2356cd9560d611</uid>
+    <summary>授業開始</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-09-29</dateTime>
+    </dtstart>
+    <uid>3b0c9d32268eadbfb61db7be3efb87b0003ff47d</uid>
+    <summary>学位授与式</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2004-10-30</dateTime>
+    </dtstart>
+    <uid>da897d83ccd3af98f331183836ca5836af90d082</uid>
+    <summary>修士中間発表</summary>
+    <description>（仮）修士中間発表</description>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2005-02-01</dateTime>
+    </dtstart>
+    <uid>3706f9074b8043b6af6265481f826bb1afd67240</uid>
+    <summary>修士最終試験</summary>
+    <description>（仮）修士最終試験</description>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2005-02-02</dateTime>
+    </dtstart>
+    <uid>3706f9074b8043b6af6265481f826bb1afd67240</uid>
+    <summary>修士最終試験</summary>
+    <description>（仮）修士最終試験</description>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2005-02-19</dateTime>
+    </dtstart>
+    <uid>bee8efd1551b90a765e557e0fc9a6ffc543424c9</uid>
+    <summary>総合政策学部入試</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2005-02-20</dateTime>
+    </dtstart>
+    <uid>7b62f5284430e607f948bb1e19315f90c9bff03e</uid>
+    <summary>環境情報学部入試</summary>
+   </Vevent>
+  </component>
+
+  <component>
+   <Vevent>
+    <dtstart rdf:parseType="Resource">
+     <tzid>Asia/Tokyo</tzid>
+     <dateTime>2005-02-26</dateTime>
+    </dtstart>
+    <uid>3bf2eac113f3b81767320d87b7b7e0a824d4fa82</uid>
+    <summary>総合政策学部・環境情報学部合格発表</summary>
+   </Vevent>
+  </component>
+
+
+  <component>
+   <Vtimezone>
+    <tzid>Asia/Tokyo</tzid>
+    <standard rdf:parseType="Resource">
+     <dtstart rdf:parseType="Resource">
+      <dateTime>1970-01-01T00:00:00</dateTime>
+     </dtstart>
+     <tzoffsetfrom>+0900</tzoffsetfrom>
+     <tzoffsetto>+0900</tzoffsetto>
+    </standard>
+   </Vtimezone>
+  </component>
+ </Vcalendar>
+</rdf:RDF>

@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+    xmlns:wot="http://xmlns.com/wot/0.1/"
+    >
+
+    <foaf:Person rdf:nodeID="msakai">
+        <foaf:name>Masahiro Sakai</foaf:name>
+        <foaf:name xml:lang="ja">酒井 政裕</foaf:name>
+        <foaf:firstName>Masahiro</foaf:firstName>
+        <foaf:firstName xml:lang="ja">政裕</foaf:firstName>
+        <foaf:surname>Sakai</foaf:surname>
+        <foaf:surname xml:lang="ja">酒井</foaf:surname>
+        <foaf:nick>sakai</foaf:nick>
+        <foaf:gender>male</foaf:gender>
+        <foaf:title>Mr</foaf:title>
+        <foaf:mbox_sha1sum>8d759f902c2c231513c66296050deb069327557a</foaf:mbox_sha1sum>
+        <foaf:mbox_sha1sum>3aa2cc553e050256de4d7cdba1fd6957c8aac36e</foaf:mbox_sha1sum>
+        <foaf:mbox rdf:resource="mailto:sakai_325&#64;msn.com" />
+
+        <foaf:homepage rdf:resource="http://web.sfc.keio.ac.jp/~s01397ms/" />
+        <foaf:weblog rdf:resource="http://web.sfc.keio.ac.jp/~s01397ms/d/"
+                     dc:title="ヒビルテ" />
+        <foaf:schoolHomepage rdf:resource="http://www.sfc.keio.ac.jp/"
+                             dc:title="慶応義塾大学湘南藤沢キャンパス"  />
+        <foaf:schoolHomepage rdf:resource="http://www.shonan-hi.ed.jp/"
+                             dc:title="神奈川県立湘南高等学校"  />
+        <foaf:msnChatID>sakai_325&#64;msn.com</foaf:msnChatID>
+
+        <foaf:interest rdf:resource="urn:isbn:0-521-57651-2" 
+                       dc:title="Topology via Logic" />
+        <foaf:interest rdf:resource="http://www16.big.or.jp/~zun/html/th08.html"
+                       dc:title="東方永夜抄 〜 Imperishable Night." />
+        <foaf:interest rdf:resource="http://www16.big.or.jp/~zun/html/th07.html"
+                       dc:title="東方妖々夢 〜 Perfect Cherry Blossom." />
+        <foaf:interest rdf:resource="http://www16.big.or.jp/~zun/html/th06.html"
+                       dc:title="東方紅魔郷 〜 the Embodiment of Scarlet Devil." />
+        <foaf:interest rdf:resource="http://www.w3.org/2001/sw/"
+                       dc:title="Semantic Web" />
+        <foaf:interest rdf:resource="http://www.ruby-lang.org/" />
+        <foaf:interest rdf:resource="http://haskell.org/" />
+        <foaf:interest rdf:resource="http://www.younganimal.com/berserk/"
+                       dc:title="Berserk" />
+
+        <foaf:currentProject rdf:resource="http://ruby-gnome2.sourceforge.jp/"
+                             dc:title="Ruby-GNOME2" />
+
+        <foaf:based_near>
+            <geo:SpatialThing rdf:about="http://www.sfc.keio.ac.jp/">
+                 <geo:lat>35.3883</geo:lat>
+                 <geo:long>139.4277</geo:long>
+            </geo:SpatialThing>
+        </foaf:based_near>
+
+        <foaf:based_near>
+            <geo:Point>
+                 <geo:lat>35.32</geo:lat>
+                 <geo:long>139.50</geo:long>
+            </geo:Point>
+        </foaf:based_near>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Jun'ichi NAKAMURA</foaf:name> <!-- ' -->
+                <foaf:name xml:lang="ja">中村 純一</foaf:name>
+                <foaf:nick xml:lang="ja">じゃん</foaf:nick>
+                <foaf:mbox_sha1sum>5de004b562e45ca0afe4a7bc4c51d27175aedee3</foaf:mbox_sha1sum> 
+                <foaf:mbox_sha1sum>2d124678aac9cec2706f2e60f951d451dc5cea47</foaf:mbox_sha1sum> 
+                <foaf:homepage rdf:resource="http://www.tom.sfc.keio.ac.jp/~jn/"/>
+                <foaf:weblog rdf:resource="http://www.tom.sfc.keio.ac.jp/~jn/ChangeLog/"/>
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Youichi Toyota</foaf:name>
+                <foaf:name xml:lang="ja">豊田 陽一</foaf:name>
+                <foaf:nick xml:lang="ja">とよぴー</foaf:nick>
+                <foaf:nick>wisteria</foaf:nick>
+                <foaf:mbox_sha1sum>60b72b65d8c8e26793e9ad1ee85eb1dc0c95348b</foaf:mbox_sha1sum>
+                <foaf:mbox_sha1sum>354e06c85774057aadb17786e6a03711dbdb19b2</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://www.tom.sfc.keio.ac.jp/~wisteria/"/>
+                <foaf:weblog rdf:resource="http://www.tom.sfc.keio.ac.jp/~wisteria/mt/" />
+                <foaf:weblog rdf:resource="http://web.sfc.keio.ac.jp/~wisteria/i/metain/read.cgi"/>
+                <rdfs:seeAlso rdf:resource="http://www.tom.sfc.keio.ac.jp/~wisteria/foaf.rdf"/>
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Noritada Shimizu</foaf:name>
+                <foaf:name xml:lang="ja">清水 智公</foaf:name>
+                <foaf:nick>chiko</foaf:nick>
+                <foaf:mbox_sha1sum>87369dc94d93a5226d91d564ed92ee55efc3561e</foaf:mbox_sha1sum>
+                <foaf:mbox_sha1sum>ba398ce3398181ba1f3df4f05dda2b7295d715ec</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://www.tom.sfc.keio.ac.jp/~chiko/"/>
+                <foaf:weblog rdf:resource="http://www.tom.sfc.keio.ac.jp/~chiko/diary/"/>
+                <rdfs:seeAlso rdf:resource="http://www.tom.sfc.keio.ac.jp/~chiko/foaf.rdf"/>
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Norio Toyama</foaf:name>
+                <foaf:name xml:lang="ja">遠山 緑生</foaf:name>
+                <foaf:mbox_sha1sum>5adac27e4892b9204891416aae5cc7970c72af46</foaf:mbox_sha1sum>
+                <foaf:mbox_sha1sum>1ac2f7f94b39db5c895e8c666861dc8c762f2a97</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://www.tom.sfc.keio.ac.jp/~next/"/>
+                <foaf:weblog rdf:resource="http://www.tom.sfc.keio.ac.jp/~next/tdiary/"/>
+                <rdfs:seeAlso rdf:resource="http://www.tom.sfc.keio.ac.jp/~next/foaf.rdf"/>
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Fumihiro Kato</foaf:name>
+                <foaf:name xml:lang="ja">加藤 文彦</foaf:name>
+                <foaf:nick>torry</foaf:nick>
+                <foaf:mbox_sha1sum>d8142cb1b17e496219235aa63b0a039bfa9791e8</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://www.tom.sfc.keio.ac.jp/~torry/"/>
+                <foaf:weblog rdf:resource="http://www.tom.sfc.keio.ac.jp/~torry/diary/"/>
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Takashi OTA</foaf:name>
+                <foaf:name xml:lang="ja">太田 尚志</foaf:name>
+                <foaf:nick>takot</foaf:nick>
+                <foaf:mbox_sha1sum>b2f051e40be03331297fa6d0d29a2c1817f184a8</foaf:mbox_sha1sum>
+                <foaf:mbox_sha1sum>15d459a8b73285c2ab7edafa91893859a8bb4ac7</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://web.sfc.keio.ac.jp/~t00156to/"/>
+                <foaf:weblog rdf:resource="http://web.sfc.keio.ac.jp/~t00156to/diary/"/>
+                <rdfs:seeAlso rdf:resource="http://web.sfc.keio.ac.jp/~t00156to/foaf.rdf"/>
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+		<foaf:nick>katoken</foaf:nick>
+                <foaf:mbox_sha1sum>49d413bd8f3f410b44fbe447ae4bbe42e260543b</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://www.rainmaker.jp/" 
+                               dc:title="雨男.jp" />
+                <foaf:weblog rdf:resource="http://www.rainmaker.jp/diary/"
+                             dc:title="My Heart Dumped!" />
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+		<foaf:nick xml:lang="ja">ぷるびお</foaf:nick>
+                <foaf:nick xml:lang="it">Fulvio</foaf:nick>
+                <foaf:mbox_sha1sum>9f3e75a92e32f8b52e0d9c4847cef5a6172287c5</foaf:mbox_sha1sum>
+                <foaf:mbox_sha1sum>dcc4d207758be0e7b60ccbdaa2dedf70ca74db63</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://web.sfc.keio.ac.jp/~t01004rk/" />
+                <foaf:weblog rdf:resource="http://web.sfc.keio.ac.jp/~t01004rk/diary/xdiary.cgi" />
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Takayuki Seki</foaf:name>
+                <foaf:nick>alpha</foaf:nick>
+                <foaf:mbox_sha1sum>ba2b8b29f22185aeba1c2a98d8dc2ebe04dbcb91</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://web.sfc.keio.ac.jp/~alpha/"/>
+                <foaf:weblog rdf:resource="http://web.sfc.keio.ac.jp/~alpha/page/" dc:title="大切なページ" />
+                
+                <foaf:weblog rdf:resource="http://yapeus.com/users/alpha_h/" dc:title="大切なページ(yapeus ver.)" />
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:mbox_sha1sum>699d7623f3635ab946e80709c877e854905e9fe8</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://web.sfc.keio.ac.jp/~naoe/"/>
+                <foaf:weblog rdf:resource="http://web.sfc.keio.ac.jp/~naoe/japanese/diary/" dc:title="ザ・フィクション　戯れ言日記" />
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Yuya Kuno</foaf:name>
+                <foaf:name xml:lang="ja">久野友也</foaf:name>
+                <foaf:nick xml:lang="ja">おにぃちゃん</foaf:nick>
+                <foaf:nick>boya</foaf:nick>
+                <foaf:mbox_sha1sum>c18a163e90084cf77efe17542c49bbf9388d97b6</foaf:mbox_sha1sum>
+                <foaf:mbox_sha1sum>c2ef18a79f30d96724004df7d7e68a9787154c86</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://web.sfc.keio.ac.jp/~t00316yk/"/>
+                <rdfs:seeAlso rdf:resource="http://www.tom.sfc.keio.ac.jp/~t00316yk/home/profile/foaf.rdf"/>
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Yuki Kawai</foaf:name>
+                <foaf:name xml:lang="ja">川井 祐規</foaf:name>
+                <foaf:mbox_sha1sum>e0e6ad56487e04821315d46786327980e7ed8189</foaf:mbox_sha1sum>
+                <foaf:mbox_sha1sum>215ed88962d98bd5c53beece729e919b9a05dc4e</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://web.sfc.keio.ac.jp/~t00266yk/"/>
+                <foaf:weblog rdf:resource="http://web.sfc.keio.ac.jp/~t00266yk/diary/news.html"/>
+                <foaf:weblog rdf:resource="http://web.sfc.keio.ac.jp/~t00266yk/diary/review.html"/>
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:nick>777</foaf:nick>
+                <foaf:mbox_sha1sum>f43d8ce71006b5f8621458603ff7229b2fafbfe9</foaf:mbox_sha1sum>
+                <foaf:mbox_sha1sum>7953dde9a07cdcec7b8a559ff158795a57ad2a64</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://web.sfc.keio.ac.jp/~t99794yf/"/>
+                <foaf:weblog rdf:resource="http://web.sfc.keio.ac.jp/~t99794yf/diary/diary.cgi" />
+            </foaf:Person>
+        </foaf:knows>
+
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Yuichiro AIZAWA</foaf:name>
+                <foaf:name xml:lang="ja">藍澤 雄一郎</foaf:name>
+                <foaf:mbox_sha1sum>a677145e59496150a1cbbeec9549525aad8c5e80</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://www.yaizawa.jp/"/>
+                <foaf:weblog rdf:resource="http://www.yaizawa.jp/%7eyuichiro/diary/" />
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Hiroyuki Katayama</foaf:name>
+                <foaf:name xml:lang="ja">片山 寛之</foaf:name>
+                <foaf:mbox_sha1sum>ee23ab86b8f0992089cc598a8edf939351c16184</foaf:mbox_sha1sum>
+                 
+                <foaf:mbox_sha1sum>afa13a4bbd6e75a45958b3143afd9cb7472799f6</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://web.sfc.keio.ac.jp/~katapon/" />
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+
+                <foaf:mbox_sha1sum>d2d6fc7d19aabfd0cea483c0119b05ecdc569d62</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://web.sfc.keio.ac.jp/~masaya/" />
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Shinya Takeuchi</foaf:name>
+                <foaf:name xml:lang="ja">竹内 慎哉</foaf:name>
+                <foaf:mbox_sha1sum>694723c97f2ec34f1ce9fe70ff4c612e0096b48c</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://web.sfc.keio.ac.jp/~t00618st/" />
+            </foaf:Person>
+        </foaf:knows>
+
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Kazuto Ishihara</foaf:name>
+                <foaf:name xml:lang="ja">石原 和音</foaf:name>
+                <foaf:mbox_sha1sum>91b711bbfcd765376a699623ee66641bcac1c23e</foaf:mbox_sha1sum>
+                <foaf:mbox_sha1sum>725c5da1f512ab74d4fbcf665c6b858f2d1468db</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://www.kz-soft.com/" />
+                <foaf:weblog rdf:resource="http://web.sfc.keio.ac.jp/~t00069ki/diary/" />
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Mari Sawai</foaf:name>
+                <foaf:name xml:lang="ja">沢井 麻里</foaf:name>
+                <foaf:mbox_sha1sum>e151e8d6cbbbc667a9244039c0d11f9e57598b68</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://web.sfc.keio.ac.jp/~t96463ms/" />
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+
+                <foaf:mbox_sha1sum>a2e6b784252ac975ae8ee048c8eea46f80eb3288</foaf:mbox_sha1sum>
+                <foaf:mbox_sha1sum>2c4e8c2fb5b4debad4282520033d455708b783d7</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://web.sfc.keio.ac.jp/~t00532au/" />
+            </foaf:Person>
+        </foaf:knows>
+
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Masahiro Arai</foaf:name>
+                <foaf:name xml:lang="ja">新井 正弘</foaf:name>
+                <foaf:nick xml:lang="ja">ケシゴム</foaf:nick>
+                <foaf:mbox_sha1sum>638976ac0c573ee7842e102e9d5d9bdf68db1c99</foaf:mbox_sha1sum>
+                <foaf:mbox_sha1sum>6aa5e710da22d9d961b0fc0d9f21228c68740409</foaf:mbox_sha1sum>
+                <foaf:weblog rdf:resource="http://park15.wakwak.com/~masa/" />
+                <foaf:depiction rdf:resource="http://park15.wakwak.com/~masa/profile/cb400sf/me.jpg"/>
+                
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Yusuke Wada</foaf:name>
+                <foaf:mbox_sha1sum>cf6b3645f7ad0f54d77cc2f8fa1cbda3c0ffa604</foaf:mbox_sha1sum>
+                <foaf:nick xml:lang="ja">ユッケ</foaf:nick>
+                <foaf:depiction rdf:resource="http://web.sfc.keio.ac.jp/~t00274yw/yusuke02.jpg"/>
+                <foaf:weblog rdf:resource="http://yusukebe.com/" />
+                <rdfs:seeAlso rdf:resource="http://web.sfc.keio.ac.jp/~t00274yw/diary/foaf.rdf" />
+            </foaf:Person>
+        </foaf:knows>
+
+
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Masao Mutoh</foaf:name>
+                <foaf:nick xml:lang="ja">むとぽん</foaf:nick>
+                <foaf:mbox_sha1sum>3957c57decbf88610ced2e0cf656621740a25a0c</foaf:mbox_sha1sum>
+                <foaf:homepage rdf:resource="http://ponx.s5.xrea.com/hiki/" />
+                <foaf:homepage>
+                  <foaf:Document rdf:about="http://home2.highway.ne.jp/mutoh/">
+                    <foaf:logo rdf:resource="http://home2.highway.ne.jp/mutoh/images/banner.jpg" />
+                  </foaf:Document>
+                </foaf:homepage>
+                <foaf:weblog rdf:resource="http://ponx.s5.xrea.com/bibo/" />
+                <foaf:currentProject rdf:resource="http://ruby-gnome2.sourceforge.jp/" />
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Akira Tanaka</foaf:name>
+                <foaf:nick>akr</foaf:nick>
+                <foaf:mbox_sha1sum>c751d612dd222cf1fe7f7d58688664964c25672a</foaf:mbox_sha1sum>
+                <foaf:weblog rdf:resource="http://cvs.m17n.org/~akr/diary/" /> 
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Nobuo Yamashita</foaf:name>
+                <foaf:nick>nobsun</foaf:nick>
+                <foaf:mbox_sha1sum>b1b03bba0549012e96bc3e451db1d9d472efc292</foaf:mbox_sha1sum>
+                <foaf:weblog rdf:resource="http://www.sampou.org/cgi-bin/cahier.cgi" />
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>Minero Aoki</foaf:name>
+                <foaf:name xml:lang="ja">青木峰郎</foaf:name>
+                <foaf:mbox_sha1sum>479f5080e273dc5ac930158354eceb4df55a9728</foaf:mbox_sha1sum>
+                <foaf:weblog rdf:resource="http://i.loveruby.net/d/" />
+                <foaf:homepage rdf:resource="http://i.loveruby.net/" />
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name xml:lang="ja">笹田 耕一</foaf:name>
+                <foaf:name>Sasada Koichi</foaf:name>
+                <foaf:mbox_sha1sum>8dbe11673cdf5bf1aa977d2fed1bfa3c8935dbef</foaf:mbox_sha1sum>
+                <foaf:weblog rdf:resource="http://www.namikilab.tuat.ac.jp/~sasada/diary/" />
+                <foaf:homepage rdf:resource="http://www.namikilab.tuat.ac.jp/~sasada/" />
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>TOYOFUKU Chikanobu</foaf:name>
+                <foaf:mbox_sha1sum>07bf5313294b781b20ba055c7054a6e08cdefe8c</foaf:mbox_sha1sum>
+                <foaf:mbox_sha1sum>c05242881b65903c3e463844c2f4d11fdbc19c34</foaf:mbox_sha1sum>
+                <foaf:mbox_sha1sum>ba4a87327f5f02a02539a9858dfbb8279aafa54c</foaf:mbox_sha1sum>
+                <foaf:mbox_sha1sum>015a805d80dea09a2ae468267e389b4870bce4c0</foaf:mbox_sha1sum>
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>TAKAHASHI 'Maki' Masayoshi</foaf:name>
+                <foaf:mbox_sha1sum>4cbf1061fb95e2cf5328d8b6169e21038c8b44c6</foaf:mbox_sha1sum>
+                <foaf:weblog rdf:resource="http://www.rubycolor.org/maki/d/" />
+                <foaf:homepage rdf:resource="http://www.rubycolor.org/maki/" />
+            </foaf:Person>
+        </foaf:knows>
+
+        <foaf:knows>
+            <foaf:Person>
+                <foaf:name>IKEGAMI Daisuke</foaf:name>
+                
+                <foaf:mbox_sha1sum>872fec692ff28a02bda68cc38ac885bb5f9f4c3d</foaf:mbox_sha1sum>
+                <foaf:mbox_sha1sum>ec60bc29c8b849b78c78a523bf5c243c3e54bc98</foaf:mbox_sha1sum>
+                <foaf:depiction rdf:resource="http://staff.aist.go.jp/ikegami-daisuke/images/i020707.jpg"/>
+                <foaf:homepage rdf:resource="http://staff.aist.go.jp/ikegami-daisuke/" />
+                <foaf:homepage rdf:resource="http://madscientist.jp/~ikegami/" />
+                <foaf:weblog rdf:resource="http://madscientist.jp/~ikegami/diary/" />
+            </foaf:Person>
+        </foaf:knows>
+
+    </foaf:Person>
+    
+    <rdf:Description rdf:about="">
+        <dc:title>FOAF for Masahiro Sakai</dc:title>
+        <dc:description
+         >Friend-of-a-Friend description for Masahiro Sakai</dc:description>
+        <foaf:maker rdf:nodeID="msakai" />
+    </rdf:Description>
+
+    <wot:PubKey>
+        <wot:identity><wot:User rdf:nodeID="msakai" /></wot:identity>
+        <wot:hex_id>AC986BB0</wot:hex_id>
+        <wot:length>1024</wot:length>
+        <wot:fingerprint
+         >5A8B 7A34 EA3E 7E28 DDBD 0263 2909 D7C4 AC98 6BB0</wot:fingerprint>
+        <wot:pubKeyAddress
+         rdf:resource="http://web.sfc.keio.ac.jp/~s01397ms/public_key.asc" />
+    </wot:PubKey>
+
+</rdf:RDF>

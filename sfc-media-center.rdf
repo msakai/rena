@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<rdf:RDF
+ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+ xmlns="http://purl.org/rss/1.0/"
+ xmlns:dc="http://purl.org/dc/elements/1.1/"
+>
+
+<channel rdf:about="http://www.tom.sfc.keio.ac.jp/~sakai/rss/sfc-media-center.rdf">
+<title>メディアセンターニュース</title>
+<link>http://www.sfc.keio.ac.jp/mchtml/</link>
+<description>メディアセンターニュース</description>
+<items>
+<rdf:Seq>
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#14" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#132" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/lib/newbook-mokuji.htm" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#7" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#131" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#11" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#10" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#8" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#16" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#9" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#5" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#4" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#3" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#2" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#1" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#20" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#6" />
+    <rdf:li rdf:resource="http://www.sfc.keio.ac.jp/mchtml/general/promo.htm" />
+</rdf:Seq>
+</items>
+</channel>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#14">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#14</link>
+<title>LEX/DB不具合発生中</title>
+<dc:date>2004-02-10</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#132">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#132</link>
+<title>FRANCIS（2/29まで）</title>
+<dc:date>2004-02-05</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/lib/newbook-mokuji.htm">
+<link>http://www.sfc.keio.ac.jp/mchtml/lib/newbook-mokuji.htm</link>
+<title>新着図書リスト（1月）更新しました</title>
+<dc:date>2004-02-03</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#7">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#7</link>
+<title>メディアセンター資料・機材の最終返却期限について</title>
+<dc:date>2004-02-02</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#131">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#131</link>
+<title>Japan Knowledge（3/31まで）</title>
+<dc:date>2004-02-02</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#11">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#11</link>
+<title>SFC-CNS利用継続手続きについて</title>
+<dc:date>2004-02-02</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#10">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#10</link>
+<title>SFC-CNS利用継続手続きについて</title>
+<dc:date>2004-02-02</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#8">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#8</link>
+<title>卒業生のメディアセンター利用について</title>
+<dc:date>2004-02-02</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#16">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#16</link>
+<title>看護医療学図書室蔵書点検のお知らせ（3/4-5)</title>
+<dc:date>2004-02-02</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#9">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#9</link>
+<title>平成15年度CNSプリンタ出力料金の請求について</title>
+<dc:date>2004-02-02</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#5">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#5</link>
+<title>春季休業期間中の文献取寄せ(ILL)サービスについて</title>
+<dc:date>2004-02-02</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#4">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#4</link>
+<title>未製本雑誌の利用が制限されます</title>
+<dc:date>2004-02-02</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#3">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#3</link>
+<title>蔵書点検に伴う館内の一部閉鎖について</title>
+<dc:date>2004-02-02</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#2">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#2</link>
+<title>春季休業中の湘南藤沢ITCの開館予定</title>
+<dc:date>2004-02-02</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#1">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#1</link>
+<title>春季休業中の塾内各地区メディアセンターの開館予定</title>
+<dc:date>2004-02-02</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#20">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#20</link>
+<title>「新飲食ルール」アンケート協力のお礼</title>
+<dc:date>2004-02-02</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#6">
+<link>http://www.sfc.keio.ac.jp/mchtml/news/current_news.htm#6</link>
+<title>藤沢市民図書利用券の更新について</title>
+<dc:date>2004-02-02</dc:date>
+</item>
+
+<item rdf:about="http://www.sfc.keio.ac.jp/mchtml/general/promo.htm">
+<link>http://www.sfc.keio.ac.jp/mchtml/general/promo.htm</link>
+<title>大江所長によるメディアセンター紹介VTR公開中</title>
+<dc:date>2004-02-02</dc:date>
+</item>
+
+</rdf:RDF>
